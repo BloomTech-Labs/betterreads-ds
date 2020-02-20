@@ -3,7 +3,7 @@
 
 
 ## BetterReads Labs 21
-You can find the project at [🚫URL NAME GOES HERE](🚫copy and paste URL here).
+PROJECT URL (____) needed
 
 ## Contributors
 
@@ -28,7 +28,7 @@ You can find the project at [🚫URL NAME GOES HERE](🚫copy and paste URL here
 ## Project Overview
 
 
-1️⃣ [Trello Board](🚫add link to trello board here)
+ [Trello Board](https://trello.com/b/pfNUGgG3/betterreads)
 
 1️⃣ [Product Canvas](🚫add link to product canvas here)
 
