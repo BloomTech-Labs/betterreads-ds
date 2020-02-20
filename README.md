@@ -12,10 +12,10 @@ PROJECT URL (____) needed
 | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
 |                      [<img src="https://avatars1.githubusercontent.com/u/53544970?s=460&v=4" width = "200" />](https://github.com/claudiasofiac)                       |                      [<img src="https://avatars2.githubusercontent.com/u/7489370?s=460&v=4" width = "200" />](https://github.com/fwenchino)                       |                      [<img src="https://ca.slack-edge.com/T4JUEB3ME-UNK2RLD3P-2d36559d35c0-512" width = "200" />](https://github.com/DNason1999)                       |                      [<img src="https://avatars0.githubusercontent.com/u/45538556?s=460&v=4" width = "200" />](https://github.com/mvkumar14)                       |                                           |
 |                 [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/claudiasofiac)                 |            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/fwenchino)             |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/DNason1999)            |          [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/mvkumar14)           |                         |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/claudia-chajon-129ab8197) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/enrique-collado-fernández-b649504b) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/dylan-nason-768001171) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/) |  
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/claudia-chajon-129ab8197) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/enrique-collado-fernández-b649504b) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/dylan-nason-768001171) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/in/kumar-veeravel-b8a70a4a) |  
 
 
-🚫 5️⃣ Optional examples of using images with links for your tech stack, make sure to change these to fit your project
+TECH STACK IMAGES (___)
 
 ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
 ![Typescript](https://img.shields.io/npm/types/typescript.svg?style=flat)
@@ -31,23 +31,19 @@ PROJECT URL (____) needed
 
  [Product Canvas](https://www.notion.so/betterReads-66b5ba5a4c7e4036ab786e10b8c2de4d)
 
-🚫 Replace lorem ipsum with a description of your project
+PRODUCT DESCRIPTION (_____)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-🚫  delete if front end is not applicable to your project
 
 1️⃣ [Deployed Front End](🚫add link to deployed app here)
 
 ### Tech Stack
 
-🚫 List all of the languages, frameworks, services, etc used here.
+ List all of the languages, frameworks, services, etc used here.
 
 ### 2️⃣ Predictions
 
-🚫 Describe your models here
+ Describe your models here
 
 ### 2️⃣ Explanatory Variables
 
@@ -58,7 +54,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
 -   Explanatory Variable 5
 
 ### Data Sources
-🚫  Add to or delete souce links as needed for your project
+  Add to or delete souce links as needed for your project
 
 
 -   [Source 1] (🚫add link to python notebook here)
@@ -69,7 +65,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
 
 ### Python Notebooks
 
-🚫  Add to or delete python notebook links as needed for your project
+  Add to or delete python notebook links as needed for your project
 
 [Python Notebook 1](🚫add link to python notebook here)
 
