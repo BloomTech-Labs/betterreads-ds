@@ -5,7 +5,7 @@
 ## BetterReads Labs 21
 PROJECT URL (____) needed
 
-## Contributors
+## DS TEAM
 
 
 |                                       [Claudia Chajon](https://github.com/claudiasofiac)                                        |                                       [Enrique Collado](https://github.com/fwenchino)                                        |                                       [Dylan Nason](https://github.com/DNason1999)                                        |                                       [Kumar Veeravel](https://github.com/mvkumar14)                                        |                                                                               |
