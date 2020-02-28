@@ -1,3 +1,5 @@
+import requests
+import json
 
 def aggregate(alist,attribute):
     """ This function aggregates specific attributes from a list of dictionaries
@@ -29,3 +31,30 @@ def dictlist_to_df(alist):
 def test():
     print('test')
     pass
+
+def get_list(book_list_name,api_key):
+    """ Function to compose and obtain information from a NYT
+    books endpoint.
+    
+    There are many book lists, and the api returns the book lists
+    in JSON format with a lot of information beyond just the titles 
+    of the books. 
+    
+    This function returns a book list with just the pertinent 
+    information. a dictionary in the format {ISBN:Book title}. 
+    
+    Dependencies: 
+    requests
+    json
+    """
+    
+    request_url=("https://api.nytimes.com/svc/books/v3/lists/current/"
+                 + book_list_name
+                 + ".json?api-key="
+                 + api_key)
+    results = requests.get(request_url)
+    results = json.loads(results.text)
+    
+    book_list = aggregate(results['results']['books'],'title')
+    
+    return book_list
