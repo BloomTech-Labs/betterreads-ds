@@ -1,6 +1,6 @@
 # from decouple import config #<-- not sure what this does yet
 from flask import Flask, render_template, request
-import
+
 
 def create_app():
     app = Flask(__name__)
@@ -44,3 +44,6 @@ def create_app():
 
 
     return app
+
+if __name__=="__main__":
+    print('__file__={0:<35} | __name__={1:<20} | __package__={2:<20}'.format(__file__,__name__,str(__package__)))
