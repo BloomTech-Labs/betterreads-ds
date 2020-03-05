@@ -1,7 +1,3 @@
-
-
-
-
 ## BetterReads Labs 21
 PROJECT URL (____) needed
 
@@ -13,6 +9,7 @@ PROJECT URL (____) needed
 |         [<img src="https://avatars1.githubusercontent.com/u/53544970?s=460&v=4" width = "200" />](https://github.com/claudiasofiac)         |    [<img src="https://avatars2.githubusercontent.com/u/7489370?s=460&v=4" width = "200" />](https://github.com/fwenchino)     |        [<img src="https://ca.slack-edge.com/T4JUEB3ME-UNK2RLD3P-2d36559d35c0-512" width = "200" />](https://github.com/DNason1999)         |       [<img src="https://avatars0.githubusercontent.com/u/45538556?s=460&v=4" width = "200" />](https://github.com/mvkumar14)       |
 |                         [<img src="https://github.com/favicon.ico" width="15">](https://github.com/claudiasofiac)                          |                      [<img src="https://github.com/favicon.ico" width="15">](https://github.com/fwenchino)                      |                         [<img src="https://github.com/favicon.ico" width="15">](https://github.com/DNason1999)                          |                        [<img src="https://github.com/favicon.ico" width="15">](https://github.com/mvkumar14)                        |
 | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/claudia-chajon-129ab8197/) | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/enrique-collado-fernández-b649504b/) | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/dylan-nason-768001171/) | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/kumar-veeravel-b8a70a4a/) |
+
 
 
 
@@ -59,11 +56,8 @@ PRODUCT DESCRIPTION (_____)
   Add to or delete souce links as needed for your project
 
 
--   [Source 1] (🚫add link to python notebook here)
--   [Source 2] (🚫add link to python notebook here)
--   [Source 3] (🚫add link to python notebook here)
--   [Source 4] (🚫add link to python notebook here)
--   [Source 5] (🚫add link to python notebook here)
+-   [OpenLibrary] (https://openlibrary.org/)
+-   [Google Books API] (https://developers.google.com/books/)
 
 ### Python Notebooks
 
@@ -121,7 +115,6 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Backend Documentation](_link to your backend readme here_) for details on the backend of our project.
+See [Backend Documentation](https://github.com/Lambda-School-Labs/betterreads-backend/blob/master/README.md) for details on the backend of our project.
 
-See [Front End Documentation](_link to your front end readme here_) for details on the front end of our project.
-
+See [Front End Documentation](https://github.com/Lambda-School-Labs/betterreads-frontend/blob/master/readme.md) for details on the front end of our project.
