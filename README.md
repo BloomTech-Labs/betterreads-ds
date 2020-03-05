@@ -56,8 +56,11 @@ PRODUCT DESCRIPTION (_____)
   Add to or delete souce links as needed for your project
 
 
--   [OpenLibrary] (https://openlibrary.org/)
--   [Google Books API] (https://developers.google.com/books/)
+-   [Source 1] (🚫add link to python notebook here)
+-   [Source 2] (🚫add link to python notebook here)
+-   [Source 3] (🚫add link to python notebook here)
+-   [Source 4] (🚫add link to python notebook here)
+-   [Source 5] (🚫add link to python notebook here)
 
 ### Python Notebooks
 
@@ -115,6 +118,6 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Backend Documentation](https://github.com/Lambda-School-Labs/betterreads-backend/blob/master/README.md) for details on the backend of our project.
+See [Backend Documentation](_link to your backend readme here_) for details on the backend of our project.
 
-See [Front End Documentation](https://github.com/Lambda-School-Labs/betterreads-frontend/blob/master/readme.md) for details on the front end of our project.
+See [Front End Documentation](_link to your front end readme here_) for details on the front end of our project.
