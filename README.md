@@ -78,8 +78,33 @@ PRODUCT DESCRIPTION (_____)
 
 ### 3️⃣ How to connect to the data API
 
-🚫 List directions on how to connect to the API here
+API Documentation can be found here: https://documenter.getpostman.com/view/9988547/SzS4R6vn?version=latest
 
+The Default format that books are returned in is as follows:
+```
+{
+  googleId: STRING,
+  title: STRING,
+  authors: STRING,
+  publisher: STRING,
+  publishedDate: STRING,
+  description: STRING,
+  isbn10: STRING,
+  isbn13: STRING,
+  pageCount: INTEGER,
+  categories: STRING,
+  thumbnail: STRING,
+  smallThumbnail: STRING,
+  language: STRING,
+  webReaderLink: STRING,
+  textSnippet: STRING,
+  isEbook: BOOLEAN,
+  averageRating: DECIMAL
+}
+```
+
+The API may be extended in the future to return more details values present in
+the post request.
 ## Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
