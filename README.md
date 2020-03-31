@@ -1,5 +1,8 @@
-## BetterReads Labs 21
-PROJECT URL (____) needed
+## Readrr Labs 21
+Main Site: https://www.readrr.app/
+
+DS API: readrr-heroku-test.herokuapp.com/
+View Docs for endpoint: https://documenter.getpostman.com/view/10879384/SzYXXz7Z?version=latest
 
 ## DS TEAM
 
@@ -25,27 +28,30 @@ TECH STACK IMAGES (___)
 
 ## Project Overview
 
+ [Deployed Front End](https://www.readrr.app/)
 
  [Trello Board](https://trello.com/b/pfNUGgG3/betterreads)
 
  [Product Canvas](https://www.notion.so/betterReads-66b5ba5a4c7e4036ab786e10b8c2de4d)
 
-PRODUCT DESCRIPTION (_____)
+The aim of this project is to provide a clean, uncluttered user interface that allows a user to track books similar to how GoodReads allows you to track books. More details can be found in the [product vision document](https://www.notion.so/Vision-Problem-Objectives-bb24ca087420443e8503115552bf4b25) (PVD accessible only to team members)
 
+The core DS role on this project is to provide recommendations. If there are other DS utilties that you would like to add, talk to the Web, and UI teams, and figure out what the feature is going to look like (from a UI standpoint) and what data you need to send back and forth in order to impliment the feature.
 
-
-1️⃣ [Deployed Front End](🚫add link to deployed app here)
 
 ### Tech Stack
 
- List all of the languages, frameworks, services, etc used here.
+Experiments are run locally in jupyter notebooks, and uploaded to branches of the repo. The API is currently being hosted on heroku, with data being hosted in an AWS RDS database. See [issue #8](https://github.com/Lambda-School-Labs/betterreads-ds/issues/8) for details on why we switched to heroku from an AWS elastic beanstalk instance. 
 
-### 2️⃣ Predictions
+### Predictions
 
- Describe your models here
+ The core recommendation model is based off of a list of the top 10,000 books from goodreads. The data is sourced from [here](https://github.com/zygmuntz/goodbooks-10k). In the future this data will (hopefully) be augmented by OpenLibrary Data, and Google API data. 
+ 
+ Recommendation models seem to nearly always come down to some implimentation of the nearest neighbors model. The key is to find a proper embedding such that the nearest neighbors model returns good results. The current model is a K-nearest-neighbors model using user rating profiles. For more information about the model see the [recommendations](https://github.com/Lambda-School-Labs/betterreads-ds/tree/Recommendations) branch.
 
-### 2️⃣ Explanatory Variables
 
+### Explanatory Variables
+ Currently the only explanitory variable in the recommendations data is user ratings. 
 -   Explanatory Variable 1
 -   Explanatory Variable 2
 -   Explanatory Variable 3
@@ -72,39 +78,40 @@ PRODUCT DESCRIPTION (_____)
 
 [Python Notebook 3](🚫add link to python notebook here)
 
-### 3️⃣ How to connect to the web API
+### How to connect to the web API
 
-🚫 List directions on how to connect to the API here
+Details on how to connect to the Web API are located at the top of [this](https://www.notion.so/Architecture-Details-21cb8620660946b68e16762429d778c5) document. 
 
-### 3️⃣ How to connect to the data API
+### How to connect to the data API
 
-API Documentation can be found here: https://documenter.getpostman.com/view/9988547/SzS4R6vn?version=latest
+API Documentation can be found here: https://documenter.getpostman.com/view/10879384/SzYXXz7Z?version=latest
 
-The Default format that books are returned in is as follows:
+The account used for the postman collection is the betterreadslabs21@gmail.com account (Sign in using google). Ask the TL or SL for login credentials.
+
+There are currently two endpoints. One serves two types of search results (Depending on POSTed parameters) and the other serves recommendations. Currently the recommendations endpoint serves hardcoded recommendations. The code to serve recommendations is commented out in the application.py file [see here](https://github.com/Lambda-School-Labs/betterreads-ds/blob/heroku_deployment/application.py). Some of the issues regarding getting the recommendations endpoint are documented in [issue #8](https://github.com/Lambda-School-Labs/betterreads-ds/issues/8)
+
+Here is an example of the formatting for an individual book in the response:
 ```
 {
-  googleId: STRING,
-  title: STRING,
-  authors: STRING,
-  publisher: STRING,
-  publishedDate: STRING,
-  description: STRING,
-  isbn10: STRING,
-  isbn13: STRING,
-  pageCount: INTEGER,
-  categories: STRING,
-  thumbnail: STRING,
-  smallThumbnail: STRING,
-  language: STRING,
-  webReaderLink: STRING,
-  textSnippet: STRING,
-  isEbook: BOOLEAN,
-  averageRating: DECIMAL
-}
+            "authors": ["Frank Herbert"],
+            "averageRating": 4.5,
+            "categories": ["Fiction"],
+            "description": "Follows the adventures of Paul Atreides, the son of a betrayed duke given up for dead on a treacherous desert                 planet and adopted by its fierce, nomadic people, who help him unravel his most unexpected destiny.",
+            "googleId": "B1hSG45JCX4C",
+            "isEbook": false,
+            "isbn10": "0441013597",
+            "isbn13": "9780441013593",
+            "language": "en",
+            "pageCount": 528,
+            "publishedDate": "2005",
+            "publisher": "Penguin",
+            "smallThumbnail": "http://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api",
+            "textSnippet": "Follows the adventures of Paul Atreides, the son of a betrayed duke given up for dead on a treacherous desert planet and adopted by its fierce, nomadic people, who help him unravel his most unexpected destiny.",
+            "thumbnail": "http://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+            "title": "Dune",
+            "webReaderLink": "http://play.google.com/books/reader?id=B1hSG45JCX4C&hl=&printsec=frontcover&source=gbs_api"
+        }
 ```
-
-The API may be extended in the future to return more details values present in
-the post request.
 ## Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
