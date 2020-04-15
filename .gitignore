@@ -5,6 +5,7 @@ __pycache__/
 
 # IDE files
 *.geany
+.vscode/
 
 
 # C extensions
