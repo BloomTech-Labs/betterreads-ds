@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from readerr_api.routes.primary import primary_routes
+from readerr_api.routes.recommendations import recommendations
 
 
 def create_app():
