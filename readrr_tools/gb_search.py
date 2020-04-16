@@ -21,11 +21,16 @@ class GBWrapper:
         numeric_methods = ['isbn', 'lccn', 'oclc']
 
         if self.method not in numeric_methods:
-            tokens = terms.split()
-            terms = '+'.join(tokens)
+            if ' ' in terms:
+                tokens = terms.split()
+                terms = '+'.join(tokens)
+            else:
+                terms = terms.lower()
+
+
 
         base_url = 'https://www.googleapis.com/books/v1/volumes?q='
-        res = requests.get(base_url + self.method + terms)
+        res = requests.get(base_url + self.method + ':' + terms)
         try:
             res.raise_for_status()
 
