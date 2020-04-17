@@ -4,42 +4,48 @@ import random
 import pickle
 
 import requests
-from flask import Flask, request, jsonify
-from readrr_tools.gb_funcs import retrieve_details
-from readrr_tools.gb_search import GBWrapper
+from flask import Flask, request, jsonify, Blueprint
+from sklearn.neighbors import NearestNeighbors
+from ..route_tools.gb_funcs import retrieve_details
+from ..route_tools.gb_search import GBWrapper
 # may need cross origin resource sharing (CORS)
+
+recommendations = Blueprint("recommendations", __name__)
+
+file_path = os.path.join(os.path.dirname(__file__),
+                         '..', '..', 'notebooks')
 
 # instantiate api from wrapper
 api = GBWrapper()
 
 # load model dependencies
-with open('knn_model.pkl', 'rb') as model:
+with open(os.path.join(file_path, 'knn_model.pkl'), 'rb') as model:
     knn = pickle.load(model)
 
-with open('compressed_matrix.pkl', 'rb') as matrix:
+with open(os.path.join(file_path, 'compressed_matrix.pkl'), 'rb') as matrix:
     compressed = pickle.load(matrix)
 
-with open('book_titles.pkl', 'rb') as books:
+with open(os.path.join(file_path, 'book_titles.pkl'), 'rb') as books:
     titles = pickle.load(books)
 
 
 def get_recommendations(book_name, title_reference=titles,
                         matrix=compressed, model=knn, topn=5):
     """Returns a list of recommendations based on book title"""
-    recommendations = []
+    recs = []
     distances, indices = model.kneighbors(
         matrix[titles.index(book_name)].reshape(1, -1),
         n_neighbors=topn+1
     )
     for neighbor in indices[0]:
         title = title_reference[neighbor]
-        recommendations.append(title)
+        recs.append(title)
 
-    return recommendations
+    return recs
 
 
-@recomendations.route('/recommendations/<int:userid>', methods=['GET'])
-def recommend():
+@recommendations.route('/recommendations/<userid>', methods=['GET'])
+def recommend(userid):
     """
     Provide recommendations based on user bookshelf.
 
@@ -81,7 +87,7 @@ def recommend():
 
     for book in neighbors:
         book_data = api.search(book)
-        target_data = book_data['item'][0]
+        target_data = book_data['items'][0]
         target_json = retrieve_details(target_data)
         output_recs.append(target_json)
 
