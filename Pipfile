@@ -10,7 +10,7 @@ flask = "*"
 flask-cors = "*"
 requests = "*"
 gunicorn = "*"
-scikit-learn = "==0.21.3"
+scikit-learn = "==0.22.2"
 pandas = "*"
 
 [requires]
