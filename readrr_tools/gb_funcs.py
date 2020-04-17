@@ -13,8 +13,13 @@ import pickle
 import requests
 import json
 
+relevant_details=['id','title','authors','publisher',
+          'publishedDate','description','industryIdentifiers',
+          'pageCount','categories','thumbnail','smallThumbnail',
+          'language','webReaderLink','textSnippet','isEbook',
+          'averageRating']
 
-def retrieve_details(input_dict, keys_to_extract):
+def retrieve_details(input_dict, keys_to_extract=relevant_details):
     """
     Retreive specific keys from a dictionary object
 
@@ -27,7 +32,7 @@ def retrieve_details(input_dict, keys_to_extract):
                        in the context of BetterReads, but the function
                        will work on any dictionary).
     keys_to_extract -  A list of keys that you want to extract from the
-                       json_dict object.
+                       json_dict object. Default: relevant_details
 
     Output:
     new_dict        -  A new "flattened"dictionary with all the matching keys.
@@ -37,7 +42,7 @@ def retrieve_details(input_dict, keys_to_extract):
     new_dict = {}
     for item in input_dict.keys():
         if type(input_dict[item]) is dict:
-            temp_dict = retreive_details(input_dict[item], keys_to_extract)
+            temp_dict = retrieve_details(input_dict[item], keys_to_extract)
             new_dict.update(temp_dict)
         if item in keys_to_extract:
             new_dict[item] = input_dict[item]
