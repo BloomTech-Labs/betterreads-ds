@@ -1,13 +1,41 @@
 import os
 import json
+import random
+import pickle
 
 import requests
 from flask import Flask, request, jsonify
 from readrr_tools.gb_funcs import retrieve_details
+from readrr_tools.gb_search import GBWrapper
 # may need cross origin resource sharing (CORS)
 
-# TODO: add a way to communicate with google books api
-# TODO: add pickled model for use within reccomendations route
+# instantiate api from wrapper
+api = GBWrapper()
+
+# load model dependencies
+with open('knn_model.pkl', 'rb') as model:
+    knn = pickle.load(model)
+
+with open('compressed_matrix.pkl', 'rb') as matrix:
+    compressed = pickle.load(matrix)
+
+with open('book_titles.pkl', 'rb') as books:
+    titles = pickle.load(books)
+
+
+def get_recommendations(book_name, title_reference=titles,
+                        matrix=compressed, model=knn, topn=5):
+    """Returns a list of recommendations based on book title"""
+    recommendations = []
+    distances, indices = model.kneighbors(
+        matrix[titles.index(book_name)].reshape(1, -1),
+        n_neighbors=topn+1
+    )
+    for neighbor in indices[0]:
+        title = title_reference[neighbor]
+        recommendations.append(title)
+
+    return recommendations
 
 
 @recomendations.route('/recommendations/<int:userid>', methods=['GET'])
@@ -24,20 +52,40 @@ def recommend():
                      'pineapplepizzaandbrocolli/'
 
     user_data_url = (shelf_endpoint + userid)
-    user_books = requests.get(user_data_url)
-    user_books = json.loads(user_books.text)
+    response = requests.get(user_data_url)
+    user_books = response.json()
 
-    # TODO: take one random book where "favorite" == True
-    #       (or some other method), and use the book to
-    #       provide recommendations. Include the book
-    #       title in the response so that web and iOS
-    #       can reflect this back to the user (transparency)
+    # select a random favorite book from which to recommend books
+    favorites = []
 
-    # TODO: call google books API for data on recommendations
-    #       use ISBN if possible
+    for book in user_books:
+        if book['favorite']:
+            favorites.append(book['title'])
 
-    # TODO: correct output and include book used for recommendation
-    output = {'interest': 'hardcoded_reccs',
-              'recommendations': output_reccs}
+    # if there are no favorites, recommend based on first book
+    if len(favorites) >= 1:
+        target_book = random.choice(favorites)
+    else:
+        target_book = user_books[0]['title']
+
+    # if book is not in known titles, recommend an alternative
+    try:
+        recommended_titles = get_recommendations(target_book)
+
+    except ValueError:
+        target_book = "#GIRLBOSS"
+        recommend_titles = get_recommendations(target_book)
+
+    neighbors = get_recommendations(target_book)
+    output_recs = []
+
+    for book in neighbors:
+        book_data = api.search(book)
+        target_data = book_data['item'][0]
+        target_json = retrieve_details(target_data)
+        output_recs.append(target_json)
+
+    output = {'based_on': target_book,
+              'recommendations': output_recs}
 
     return jsonify(output)
