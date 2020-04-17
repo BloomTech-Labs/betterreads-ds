@@ -2,6 +2,7 @@ import os
 import json
 import random
 import pickle
+import logging
 
 import requests
 from flask import Flask, request, jsonify, Blueprint
@@ -9,6 +10,10 @@ from sklearn.neighbors import NearestNeighbors
 from ..route_tools.gb_funcs import retrieve_details
 from ..route_tools.gb_search import GBWrapper
 # may need cross origin resource sharing (CORS)
+
+FORMAT = "%(asctime)s - %(message)s"
+logging.basicConfig(level=logging.DEBUG, format=FORMAT)
+logging.disable(logging.CRITICAL)
 
 recommendations = Blueprint("recommendations", __name__)
 
@@ -84,8 +89,10 @@ def recommend(userid):
 
     neighbors = get_recommendations(target_book)
     output_recs = []
+    logging.info("Neighbors:" + str(neighbors))
 
-    for book in neighbors:
+    # skip first book
+    for book in neighbors[1:]:
         book_data = api.search(book)
         target_data = book_data['items'][0]
         target_json = retrieve_details(target_data)
