@@ -5,8 +5,8 @@ from .routes.recommendations import recommendations
 
 
 def create_app():
-    app = Flask(__name__)
+    a = Flask(__name__)
 
-    app.register_blueprint(recommendations)
+    a.register_blueprint(recommendations)
 
-    return app
+    return a
