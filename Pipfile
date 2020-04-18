@@ -9,9 +9,9 @@ verify_ssl = true
 flask = "*"
 flask-cors = "*"
 requests = "*"
-gunicorn = "*"
-scikit-learn = "==0.22.2"
+scikit-learn = "==0.22.2.post1"
 pandas = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
