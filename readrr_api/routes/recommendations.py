@@ -13,7 +13,7 @@ from ..route_tools.gb_search import GBWrapper
 
 FORMAT = "%(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-logging.disable(logging.CRITICAL)
+# logging.disable(logging.CRITICAL)
 
 recommendations = Blueprint("recommendations", __name__)
 
@@ -50,15 +50,11 @@ def get_recommendations(book_name, title_reference=titles,
 
 
 @recommendations.route('/recommendations', methods=['POST'])
-def recommend(userid):
+def recommend():
     """
     Provide recommendations based on user bookshelf.
     """
     user_books = request.get_json()
-
-    user_data_url = (shelf_endpoint + userid)
-    response = requests.get(user_data_url)
-    user_books = response.json()
 
     # select a random favorite book from which to recommend books
     favorites = []
