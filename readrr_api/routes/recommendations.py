@@ -49,18 +49,12 @@ def get_recommendations(book_name, title_reference=titles,
     return recs
 
 
-@recommendations.route('/recommendations/<userid>', methods=['GET'])
+@recommendations.route('/recommendations', methods=['POST'])
 def recommend(userid):
     """
     Provide recommendations based on user bookshelf.
-
-    userid - integer user id
     """
-
-    # This could probably just get sent straight to us by web
-    shelf_endpoint = 'https://api.readrr.app/api/'\
-                     'datasciencetogetasecretand'\
-                     'pineapplepizzaandbrocolli/'
+    user_books = request.get_json()
 
     user_data_url = (shelf_endpoint + userid)
     response = requests.get(user_data_url)
