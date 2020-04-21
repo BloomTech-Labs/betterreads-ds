@@ -55,29 +55,56 @@ def recommend():
     Provide recommendations based on user bookshelf.
     """
     user_books = request.get_json()
+    acquired = False
 
     # select a random favorite book from which to recommend books
     favorites = []
+
+    def shelf_iterate(shelf):
+        """Checks shelf for a valid book title"""
+        acquired = False
+        for i in range(len(shelf)):
+            try:
+                target_book = shelf[i]['title']
+                neighbors = get_recommendations(target_book)
+                acquired = True
+                break
+            except ValueError:
+                neighbors = None
+                continue
+
+        return neighbors, acquired, target_book
 
     for book in user_books:
         if book['favorite']:
             favorites.append(book['title'])
 
+    # to add some randomness
+    random.shuffle(favorites)
+
     # if there are no favorites, recommend based on first book
     if len(favorites) >= 1:
-        target_book = random.choice(favorites)
+        for i in range(len(favorites)):
+            try:
+                target_book = favorites[i]
+                neighbors = get_recommendations(target_book)
+                acquired = True
+                break
+            except ValueError:
+                continue
+
     else:
-        target_book = user_books[0]['title']
+        neighbors, acquired, target_book = shelf_iterate(user_books)
 
     # if book is not in known titles, recommend an alternative
-    try:
-        recommended_titles = get_recommendations(target_book)
+    if not acquired:
+        neighbors, acquired, target_book = shelf_iterate(user_books)
+        if neighbors is None:
+            target_book = "#GIRLBOSS"
+            neighbors = get_recommendations(target_book)
+    else:
+        neighbors = get_recommendations(target_book)
 
-    except ValueError:
-        target_book = "#GIRLBOSS"
-        recommend_titles = get_recommendations(target_book)
-
-    neighbors = get_recommendations(target_book)
     output_recs = []
     logging.info("Neighbors:" + str(neighbors))
 
