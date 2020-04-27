@@ -5,34 +5,20 @@ import pickle
 import logging
 
 import requests
-from flask import Flask, request, jsonify, Blueprint
 from sklearn.neighbors import NearestNeighbors
-from ..route_tools.gb_funcs import retrieve_details
-from ..route_tools.gb_search import GBWrapper
-# may need cross origin resource sharing (CORS)
+from readrr_api.route_tools.gb_funcs import retrieve_details
+from readrr_api.route_tools.gb_search import GBWrapper
 
-FORMAT = "%(asctime)s - %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-# logging.disable(logging.CRITICAL)
-
-recommendations = Blueprint("recommendations", __name__)
-
-file_path = os.path.join(os.path.dirname(__file__),
-                         '..', '..', 'notebooks')
-
-# instantiate api from wrapper
 api = GBWrapper()
 
-# load model dependencies
-with open(os.path.join(file_path, 'knn_model.pkl'), 'rb') as model:
+with open('notebooks/knn_model.pkl', 'rb') as model:
     knn = pickle.load(model)
 
-with open(os.path.join(file_path, 'compressed_matrix.pkl'), 'rb') as matrix:
+with open('notebooks/compressed_matrix.pkl', 'rb') as matrix:
     compressed = pickle.load(matrix)
 
-with open(os.path.join(file_path, 'book_titles.pkl'), 'rb') as books:
+with open('notebooks/book_titles.pkl', 'rb') as books:
     titles = pickle.load(books)
-
 
 def get_recommendations(book_name, title_reference=titles,
                         matrix=compressed, model=knn, topn=5):
