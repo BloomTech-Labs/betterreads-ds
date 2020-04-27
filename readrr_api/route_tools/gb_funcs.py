@@ -13,7 +13,7 @@ import pickle
 import requests
 import json
 
-relevant_details=['googleId','title','authors','publisher',
+relevant_details=['id','title','authors','publisher',
           'publishedDate','description','industryIdentifiers',
           'pageCount','categories','thumbnail','smallThumbnail',
           'language','webReaderLink','textSnippet','isEbook',
