@@ -115,6 +115,10 @@ def recommend():
         target_json = retrieve_details(target_data)
         output_recs.append(target_json)
 
+    # change 'id' to 'googleId' at every list index
+    for item in output_recs:
+        item['googleId'] = item.pop('id')
+
     output = {'based_on': target_book,
               'recommendations': output_recs}
 
