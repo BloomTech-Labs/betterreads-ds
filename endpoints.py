@@ -4,6 +4,8 @@ from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from recommendations import Recommender
+
 app = FastAPI()
 
 class Book(BaseModel):
@@ -23,11 +25,11 @@ class Book(BaseModel):
 
 @app.post('/recommendations')
 def recommend(*, books: List[Book]):
-    for book in books:
-        print(book.title)
-    '''
-    from goodreads_api.recommendations import Recommender
     r = Recommender(books)
-    return r
-    '''
-    return books
+    recommendations = r.recommend()
+    return recommendations
+
+if __name__ == "__main__":
+    request_body = 'tests/mock_bookshelf.json'
+    r = recommend(books=request_body)
+    print(r)

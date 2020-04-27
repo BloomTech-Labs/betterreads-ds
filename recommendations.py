@@ -1,10 +1,16 @@
-import os
-import json
-import random
-import pickle
-import logging
+class Recommender():
+    def __init__(self, books):
+        self.books = books
 
-import requests
+    def recommend(self):
+        for book in self.books:
+            print(book.title)
+        return self.books
+
+'''
+from random import shuffle
+from pickle import load
+from requests import get_json
 from sklearn.neighbors import NearestNeighbors
 from readrr_api.route_tools.gb_funcs import retrieve_details
 from readrr_api.route_tools.gb_search import GBWrapper
@@ -12,13 +18,13 @@ from readrr_api.route_tools.gb_search import GBWrapper
 api = GBWrapper()
 
 with open('notebooks/knn_model.pkl', 'rb') as model:
-    knn = pickle.load(model)
+    knn = load(model)
 
 with open('notebooks/compressed_matrix.pkl', 'rb') as matrix:
-    compressed = pickle.load(matrix)
+    compressed = load(matrix)
 
 with open('notebooks/book_titles.pkl', 'rb') as books:
-    titles = pickle.load(books)
+    titles = load(books)
 
 def get_recommendations(book_name, title_reference=titles,
                         matrix=compressed, model=knn, topn=5):
@@ -40,10 +46,9 @@ def recommend():
     """
     Provide recommendations based on user bookshelf.
     """
-    user_books = request.get_json()
+    user_books = get_json()
     acquired = False
 
-    # select a random favorite book from which to recommend books
     favorites = []
 
     def shelf_iterate(shelf):
@@ -65,8 +70,7 @@ def recommend():
         if book['favorite']:
             favorites.append(book['title'])
 
-    # to add some randomness
-    random.shuffle(favorites)
+    shuffle(favorites)
 
     # if there are no favorites, recommend based on first book
     if len(favorites) >= 1:
@@ -92,7 +96,6 @@ def recommend():
         neighbors = get_recommendations(target_book)
 
     output_recs = []
-    logging.info("Neighbors:" + str(neighbors))
 
     # skip first book
     for book in neighbors[1:]:
@@ -109,3 +112,4 @@ def recommend():
               'recommendations': output_recs}
 
     return jsonify(output)
+'''
