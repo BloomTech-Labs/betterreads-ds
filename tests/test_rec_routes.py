@@ -14,7 +14,7 @@ with open(json_path) as data:
     bookshelf = json.load(data)
 
 relevant_details = [
-    'id', 'title', 'authors', 'publisher',
+    'googleId', 'title', 'authors', 'publisher',
     'publishedDate', 'description', 'industryIdentifiers',
     'pageCount', 'categories', 'thumbnail', 'smallThumbnail',
     'language', 'webReaderLink', 'textSnippet', 'isEbook',
