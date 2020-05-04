@@ -1,3 +1,5 @@
+import pandas as pd
+
 class Recommender():
     def __init__(self, books):
         self.books = books
@@ -6,6 +8,14 @@ class Recommender():
         for book in self.books:
             print(book.title)
         return self.books
+
+
+# books = pd.read_csv('https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/books.csv')
+# ratings = pd.read_csv('https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/ratings.csv')
+
+# books.head()
+
+
 
 '''
 from random import shuffle
