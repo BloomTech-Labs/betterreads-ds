@@ -36,3 +36,15 @@ def create_matrix(books, ratings):
     matrix = br.pivot(index='title', columns='user_id', values='rating').fillna(0)
     matrix = csr_matrix(matrix.values)
     return matrix
+
+def create_model(matrix):
+    knn = NearestNeighbors(algorithm='brute', metric='cosine')
+    knn.fit(matrix)
+    pickle.dump(knn, open('knn_model.pkl', 'wb'))
+    return
+
+if __name__ == "__main__":
+    books, ratings = data_import()
+    books = book_cleaning(books)
+    matrix = create_matrix(books, ratings)
+    create_model(matrix)
