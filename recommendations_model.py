@@ -4,6 +4,11 @@ import re
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
+from surprise import Dataset, Reader
+from surprise import KNNBasic
+from surprise import accuracy
+from surprise.model_selection import cross_validate, train_test_split
+from surprise.model_selection import train_test_split
 
 def data_import():
     books = pd.read_csv('https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/books.csv')
@@ -30,17 +35,29 @@ def create_matrix(books, ratings):
     books = books.copy()
     ratings = ratings.copy()
 
-    br = pd.merge(ratings, books, on='book_id')
-    br  = br.drop_duplicates(['user_id', 'title'])
+    df = pd.merge(ratings, books, on='book_id')
+    df  = df.drop_duplicates(['user_id', 'title'])
 
-    matrix = br.pivot(index='title', columns='user_id', values='rating').fillna(0)
-    matrix = csr_matrix(matrix.values)
-    return matrix
+    matrix = df.pivot(index='title', columns='user_id', values='rating').fillna(0)
+    return df
 
-def create_model(matrix):
-    knn = NearestNeighbors(algorithm='brute', metric='cosine')
-    knn.fit(matrix)
-    pickle.dump(knn, open('knn_model.pkl', 'wb'))
+def create_model(df):
+    df = df.copy()
+
+    reader = Reader(rating_scale=(1, 5))
+    data = Dataset.load_from_df(df[['user_id', 'book_id', 'rating']], reader)
+    sim_options = {
+        'name': 'cosine',
+        'user_based': False,
+        'min_support': 5}
+    algo = KNNBasic(sim_options=sim_options)
+
+    # trainset, testset = train_test_split(data, test_size=.25)
+    # algo.fit(trainset)
+    # predictions = algo.test(testset)
+    # print(accuracy.rmse(predictions))
+
+    cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
     return
 
 if __name__ == "__main__":
@@ -48,3 +65,4 @@ if __name__ == "__main__":
     books = book_cleaning(books)
     matrix = create_matrix(books, ratings)
     create_model(matrix)
+    
