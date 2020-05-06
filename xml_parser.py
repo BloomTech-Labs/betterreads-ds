@@ -30,13 +30,14 @@ def book_parser(path=None):
 
 
 if __name__ == "__main__":
-    books = os.listdir('goodbooks-10k/books_xml/books_xml/books_xml/')
+    path = 'goodbooks-10k/books_xml/books_xml/books_xml/'
+    books = os.listdir(path)
 
     data = {}
     for i, book in enumerate(books):
         if i % 1000 == 0:
             print(f'Parsing book {i}')
-        row = book_parser(book)
+        row = book_parser(path + book)
         data[book.split('.')[0]] = row
 
     df = pd.DataFrame.from_dict(data=data, orient='index')
