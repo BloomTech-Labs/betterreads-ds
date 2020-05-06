@@ -4,13 +4,16 @@ import os
 import pandas as pd
 from bs4 import BeautifulSoup
 
+
 def book_parser(path=None):
     tree = ET.parse(path)
     root = tree.getroot()
 
-    ignore = {'reviews_widget', 'popular_shelves', 'book_links', 'buy_links',
-    'series_works', 'similar_books'} 
-    
+    ignore = {
+        'reviews_widget', 'popular_shelves', 'book_links', 'buy_links',
+        'series_works', 'similar_books'
+        }
+
     row = {}
     for element in root.find('book'):
         if element.tag in ignore:
@@ -24,6 +27,7 @@ def book_parser(path=None):
             for child in element.iter():
                 row[f'{element.tag}_{child.tag}'] = child.text
     return row
+
 
 if __name__ == "__main__":
     books = os.listdir('goodbooks-10k/books_xml/books_xml/books_xml/')
