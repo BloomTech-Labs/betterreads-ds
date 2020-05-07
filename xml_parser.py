@@ -1,8 +1,10 @@
 import xml.etree.ElementTree as ET
 import os
 
-import pandas as pd
 from bs4 import BeautifulSoup
+import pandas as pd
+
+from connection import connection
 
 
 def book_parser(path=None):
@@ -41,4 +43,10 @@ if __name__ == "__main__":
         data[book.split('.')[0]] = row
 
     df = pd.DataFrame.from_dict(data=data, orient='index')
-    df.to_csv('~/Desktop/output.csv', index=False)
+    engine = connection()
+    df.to_sql(
+        'goodbooks_books_xml',
+        con=engine,
+        if_exists='replace',
+        index=False
+    )
