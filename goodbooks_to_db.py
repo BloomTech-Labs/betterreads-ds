@@ -13,9 +13,10 @@ if __name__ == "__main__":
     for file in os.listdir(path):
         if file.endswith(".csv"):
             df = pd.read_csv(path + file)
+            print(f'{file} -> SQL')
             df.to_sql(
                 f'goodbooks_{file.split(".")[0]}',
                 con=engine,
                 if_exists='replace',
                 index=False
-                )
+            )
