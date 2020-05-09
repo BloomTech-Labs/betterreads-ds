@@ -1,6 +1,5 @@
+import csv
 import os
-
-import pandas as pd
 
 from connection import connection
 
@@ -72,12 +71,14 @@ if __name__ == "__main__":
 
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            df = pd.read_csv(path + file)
-            print(f'{file} -> SQL')
-            create = create_query(file.split(".")[0], db_schema)
-            # df.to_sql(
-            #     f'goodbooks_{file.split(".")[0]}',
-            #     con=engine,
-            #     if_exists='replace',
-            #     index=False
-            #     )
+            table = file.split(".")[0]
+            print(f'CREATING TABLE {table}')
+            create = create_query(table, db_schema)
+
+            print(f'INSERTING ROWS TO {table}')
+            with open(path + file) as csvfile:
+                rows = csv.reader(csvfile, delimiter=',')
+                for i, row in enumerate(rows):
+                    # NEED TO FIGURE OUT INSERT STATEMENT WITHIN SQLALCHEMY
+                    if i >= 5:
+                        break
