@@ -9,8 +9,9 @@ class Connection:
         self.DB_PASS = config('DB_PASSWORD')
         self.DB_HOST = config('DB_HOST')
         self.DB_NAME = config('DB_NAME')
-        self.DB_URL = f'postgres://{DB_USER}:{DB_PASS}@{DB_HOST}:5432\
-            /{DB_NAME}'
+
+        self.url = f'postgres://{self.DB_USER}:{self.DB_PASS}'\
+            f'@self.{self.DB_HOST}:5432/{self.DB_NAME}'
         self.connection = connect(
             dbname=self.DB_NAME,
             user=self.DB_USER,
