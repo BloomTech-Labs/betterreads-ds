@@ -12,6 +12,7 @@ requests = "*"
 scikit-learn = "==0.22.2.post1"
 pandas = "*"
 gunicorn = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.7"
