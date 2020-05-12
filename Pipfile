@@ -12,6 +12,8 @@ requests = "*"
 scikit-learn = "==0.22.2.post1"
 pandas = "*"
 gunicorn = "*"
+psycopg2-binary = "*"
+python-decouple = "*"
 
 [requires]
 python_version = "3.7"

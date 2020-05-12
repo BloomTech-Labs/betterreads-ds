@@ -136,3 +136,6 @@ dmypy.json
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Data Sources
+goodbooks-10k/
