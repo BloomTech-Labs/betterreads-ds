@@ -11,7 +11,7 @@ class Connection:
         self.DB_NAME = config('DB_NAME')
 
         self.url = f'postgres://{self.DB_USER}:{self.DB_PASS}'\
-            f'@self.{self.DB_HOST}:5432/{self.DB_NAME}'
+            f'@{self.DB_HOST}:5432/{self.DB_NAME}'
         self.connection = connect(
             dbname=self.DB_NAME,
             user=self.DB_USER,
