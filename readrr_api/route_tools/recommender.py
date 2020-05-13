@@ -1,6 +1,9 @@
 from psycopg2 import sql
 
 from connection import Connection
+from gb_search import GBWrapper
+
+
 class Book:
 
     def __init__(self, book):
@@ -38,14 +41,12 @@ class Book:
         # RETURNING FALSE MEANS OUR BOOK IS NOT IN EITHER THE XML OR GB
         return False
 
-    def gb_query(self):
-        # THESE FUNCTIONS SHOULD LIKELY BE GLOBAL, USED THROUGHOUT THE APP 
-        # IN FURTHER DEVELOPMENT
-        # QUERIES GOOGLE BOOKS IF NECESSARY
-        return
-
     def db_insert(self):
+        api = GBWrapper()
+        self.google_books_response = api.search(self.googleId)
         # INSERTS GB_QUERY INTO DATABASE
+
+        # IF THIS RUNS, WE STILL NEED TO SET self.data
         return
 
     def get_description(self):
@@ -96,4 +97,4 @@ if __name__ == "__main__":
 
     for i in bookshelf:
         book = Book(i)
-        book.book_check()
+        book.runner()
