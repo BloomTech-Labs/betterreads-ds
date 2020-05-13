@@ -1,3 +1,5 @@
+from psycopg2 import sql
+
 from connection import Connection
 class Book:
 
@@ -6,17 +8,44 @@ class Book:
         self.title = book['title']
         self.conn = Connection().connection
 
+    def book_check(self):
+        # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
+        # DEVELOPMENT OPPORTUNITY: MERGE TWO TABLES TO ONE?
+        cursor = self.conn.cursor()
+
+        # CHECKS IF BOOK IS IN 'gb_data' TABLE
+        gb_query = sql.SQL(
+            "SELECT * "
+            "FROM gb_data "
+            "WHERE googleid = %s LIMIT 1;"
+        )
+        cursor.execute(gb_query, (self.googleId,))
+        self.data = cursor.fetchone()
+        if self.data is not None:
+            return True
+
+        # CHECKS IF BOOK IS IN 'goodbooks_books_xml' TABLE
+        goodbooks_query = sql.SQL(
+            "SELECT * "
+            "FROM goodbooks_books_xml "
+            "WHERE title = %s LIMIT 1;"
+        )
+        cursor.execute(goodbooks_query, (self.title,))
+        self.data = cursor.fetchone()
+        if self.data is not None:
+            return True
+
+        # RETURNING FALSE MEANS OUR BOOK IS NOT IN EITHER THE XML OR GB
+        return False
+
     def gb_query(self):
+        # THESE FUNCTIONS SHOULD LIKELY BE GLOBAL, USED THROUGHOUT THE APP 
+        # IN FURTHER DEVELOPMENT
         # QUERIES GOOGLE BOOKS IF NECESSARY
         return
 
     def db_insert(self):
         # INSERTS GB_QUERY INTO DATABASE
-        return
-
-    def book_check(self):
-        # CHECKS IF BOOK IS IN XML
-        # CHECKS IF BOOK IS IN GOOGLE BOOKS
         return
 
     def get_description(self):
@@ -67,5 +96,4 @@ if __name__ == "__main__":
 
     for i in bookshelf:
         book = Book(i)
-        print(book.title)
-        print(book.conn)
+        book.book_check()
