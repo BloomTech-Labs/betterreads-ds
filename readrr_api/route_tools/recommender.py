@@ -1,11 +1,10 @@
-# IMPORTS
-
-
+from connection import Connection
 class Book:
 
-    def __init__(self):
-        super().__init__()
-        # SET BOOK SPECIFIC VARIABLES
+    def __init__(self, book):
+        self.googleId = book['googleId']
+        self.title = book['title']
+        self.conn = Connection().connection
 
     def gb_query(self):
         # QUERIES GOOGLE BOOKS IF NECESSARY
@@ -46,3 +45,27 @@ class Book:
     def hybrid_recommendations(self):
         # WEIGHT COLLABORATIVE / CONTENT RECOMMENDATIONS
         return
+
+if __name__ == "__main__":
+    bookshelf = [
+    {
+        "googleId": "MQeHAAAAQBAJ",
+        "title": "The Martian",
+        "authors": 	"Andy Weir",
+        },
+    {
+        "googleId": "OG0e6djUgUYC",
+        "title": "The Brothers Karamazov",
+        "authors": "Fyodor Dostoevsky",
+        },
+    {
+        "googleId": "-25.0756",
+        "title": "Data Science in Production",
+        "authors": "Ben Weber",
+        }
+        ]
+
+    for i in bookshelf:
+        book = Book(i)
+        print(book.title)
+        print(book.conn)
