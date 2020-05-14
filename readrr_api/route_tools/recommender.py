@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 
 from connection import Connection
 from gb_search import GBWrapper
+from populate import execute_queries, get_value
 
 
 class Book:
@@ -16,11 +17,11 @@ class Book:
         self.googleId = book['googleId']
         self.title = book['title']
         self.conn = Connection().connection
+        self.cursor = self.conn.cursor(cursor_factory=DictCursor)
 
     def book_check(self):
         # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
         # DEVELOPMENT OPPORTUNITY: MERGE TWO TABLES TO ONE?
-        cursor = self.conn.cursor(cursor_factory=DictCursor)
 
         # CHECKS IF BOOK IS IN 'gb_data' TABLE
         gb_query = sql.SQL(
@@ -28,8 +29,8 @@ class Book:
             "FROM gb_data "
             "WHERE googleid = %s LIMIT 1;"
         )
-        cursor.execute(gb_query, (self.googleId,))
-        self.data = cursor.fetchone()
+        self.cursor.execute(gb_query, (self.googleId,))
+        self.data = self.cursor.fetchone()
         if self.data is not None:
             return True
 
@@ -39,8 +40,8 @@ class Book:
             "FROM goodbooks_books_xml "
             "WHERE title = %s LIMIT 1;"
         )
-        cursor.execute(goodbooks_query, (self.title,))
-        self.data = cursor.fetchone()
+        self.cursor.execute(goodbooks_query, (self.title,))
+        self.data = self.cursor.fetchone()
         if self.data is not None:
             return True
 
@@ -49,21 +50,12 @@ class Book:
 
     def db_insert(self):
         api = GBWrapper()
-        self.google_books_response = api.search(self.googleId)
+        google_books_response = api.search(self.googleId)
+        
         # INSERTS GB_QUERY INTO DATABASE
-
-        # IF THIS RUNS, WE STILL NEED TO SET self.data
-        return
-
-    def get_description(self):
-        if self.book_check():
-            self.description = self.data['description']
-            return
-        # ELSE:
-            # db_insert()
-            # self.book_check()
-            # self.description = self.data['description']
-        # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION 
+        db_data = get_value(google_books_response['items'][0])
+        # execute_queries(db_data, self.conn, self.cursor)
+        execute_queries(db_data, self.conn)
         return
 
     def collaborative_recommendations(self, top_n=10):
@@ -84,8 +76,8 @@ class Book:
         STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
         with open('tfidf_model.pkl', 'rb') as tfidf:
             tfidf = load(tfidf)
-        with open('dtm.pkl', 'rb') as dtm:
-            dtm = load(dtm)
+        # with open('dtm.pkl', 'rb') as dtm:
+        #     dtm = load(dtm)
         with open('nn.pkl', 'rb') as nn:
             nn = load(nn)
 
@@ -101,8 +93,12 @@ class Book:
 
     def runner(self):
         if self.book_check():
-            self.get_description()
-        # self.gb_api_query()
+            self.description = self.data['description']
+        else:
+            self.db_insert()
+            self.book_check()
+            self.description = self.data['description']
+            # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION 
         self.content_recommendations()
 
     def hybrid_recommendations(self):
@@ -127,7 +123,7 @@ if __name__ == "__main__":
         "authors": "Fyodor Dostoevsky",
         },
     {
-        "googleId": "-25.0756",
+        "googleId": "4e43zQEACAAJ",
         "title": "Data Science in Production",
         "authors": "Ben Weber",
         }
@@ -157,7 +153,6 @@ if __name__ == "__main__":
                 tokens.append(token.text.lower())
                 # tokens.append(token.lemma_.lower())
         return tokens
-
 
     for i in bookshelf:
         book = Book(i)
