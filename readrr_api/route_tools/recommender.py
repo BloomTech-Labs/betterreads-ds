@@ -1,4 +1,10 @@
+from pickle import load, dump
+import os
+
+import pandas as pd
 from psycopg2 import sql
+from psycopg2.extras import DictCursor
+from sklearn.neighbors import NearestNeighbors
 
 from connection import Connection
 from gb_search import GBWrapper
@@ -14,7 +20,7 @@ class Book:
     def book_check(self):
         # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
         # DEVELOPMENT OPPORTUNITY: MERGE TWO TABLES TO ONE?
-        cursor = self.conn.cursor()
+        cursor = self.conn.cursor(cursor_factory=DictCursor)
 
         # CHECKS IF BOOK IS IN 'gb_data' TABLE
         gb_query = sql.SQL(
@@ -50,10 +56,14 @@ class Book:
         return
 
     def get_description(self):
-        # BASED ON BOOK_CHECK FUNCTION, GET DESCRIPTION
+        if self.book_check():
+            self.description = self.data['description']
+            return
+        # ELSE:
+            # db_insert()
+            # self.book_check()
+            # self.description = self.data['description']
         # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION 
-        # self.description = description
-        # IF THIS DOES NOT WORK, LOOK AT TEXT SNIPPET
         return
 
     def collaborative_recommendations(self, top_n=10):
@@ -67,14 +77,42 @@ class Book:
     def content_recommendations(self, top_n=10):
         # USE get_description FUNCTION OR self.description
         # LOAD THE MODEL/MATRIX HERE
+        with open('nlp.pkl', 'rb') as nlp:
+            nlp = load(nlp)
+        STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best", 
+                    "edition", "readers", "include", "provide", "information"]
+        STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
+        with open('tfidf_model.pkl', 'rb') as tfidf:
+            tfidf = load(tfidf)
+        with open('dtm.pkl', 'rb') as dtm:
+            dtm = load(dtm)
+        with open('nn.pkl', 'rb') as nn:
+            nn = load(nn)
+
         # MAKE PREDICTIONS
+        self.prediction = tfidf.transform([self.description])
+
         # RETURN TOP "N" NEARESTNEIGHBORS RECOMMENDATIONS
-        # REFERENCE recs.py deleted
+        self.distances, self.neighbors = nn.kneighbors(
+            self.prediction.todense(),
+            n_neighbors=top_n
+        )
         return
+
+    def runner(self):
+        if self.book_check():
+            self.get_description()
+        # self.gb_api_query()
+        self.content_recommendations()
 
     def hybrid_recommendations(self):
         # WEIGHT COLLABORATIVE / CONTENT RECOMMENDATIONS
         return
+
+    # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
+    # cursor.close()
+    # self.conn.close()
+
 
 if __name__ == "__main__":
     bookshelf = [
@@ -94,7 +132,35 @@ if __name__ == "__main__":
         "authors": "Ben Weber",
         }
         ]
+    
+    with open('nlp.pkl', 'rb') as nlp:
+        nlp = load(nlp)
+
+    STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best", 
+            "edition", "readers", "include", "provide", "information"]
+    STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
+
+    def tokenize(text):
+        '''
+        Input: String
+        Output: list of tokens
+        '''
+        doc = nlp(text)
+
+        tokens = []
+        
+        for token in doc:
+            if ((token.text.lower() not in STOP_WORDS) & 
+                (token.is_punct == False) & 
+                (token.pos_ != 'PRON') & 
+                (token.is_alpha == True)):
+                tokens.append(token.text.lower())
+                # tokens.append(token.lemma_.lower())
+        return tokens
+
 
     for i in bookshelf:
         book = Book(i)
         book.runner()
+        print(book.distances, book.neighbors)
+        # print(book.title)
