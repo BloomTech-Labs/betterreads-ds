@@ -123,7 +123,7 @@ class Book:
             'based_on': self.title,
             'recommendations': []
         }
-        for i in self.neighbors[0]:
+        for i in self.neighbors[0][1:]:
             i_gid = lookup[i]
             i_results = self.gb_query(i_gid)
             recommendation_output = {
@@ -214,4 +214,4 @@ if __name__ == "__main__":
         book = Book(i)
         recs = book.recommendations()
         with open(f'dsapi_example_response_{book.title}.json', 'w') as f:
-            json.dump(recs['recommendations'], f, indent=4)
+            json.dump(recs, f, indent=4)
