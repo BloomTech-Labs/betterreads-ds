@@ -1,5 +1,7 @@
 from pickle import load, dump
 import os
+from pprint import pprint
+import json
 
 import pandas as pd
 from psycopg2 import sql
@@ -76,8 +78,6 @@ class Book:
         STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
         with open('tfidf_model.pkl', 'rb') as tfidf:
             tfidf = load(tfidf)
-        # with open('dtm.pkl', 'rb') as dtm:
-        #     dtm = load(dtm)
         with open('nn.pkl', 'rb') as nn:
             nn = load(nn)
 
@@ -91,24 +91,80 @@ class Book:
         )
         return
 
-    def runner(self):
+    def hybrid_recommendations(self):
+        # WEIGHT COLLABORATIVE / CONTENT RECOMMENDATIONS
+        return
+
+    def gb_query(self, gid):
+        gb_query = sql.SQL(
+            "SELECT * "
+            "FROM gb_data "
+            "WHERE googleid = %s LIMIT 1;"
+        )
+        self.cursor.execute(gb_query, (gid,))
+        return self.cursor.fetchone()
+
+    def recommendations(self):
         if self.book_check():
             self.description = self.data['description']
         else:
             self.db_insert()
             self.book_check()
             self.description = self.data['description']
-            # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION 
+            # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
+            # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
+        
         self.content_recommendations()
 
-    def hybrid_recommendations(self):
-        # WEIGHT COLLABORATIVE / CONTENT RECOMMENDATIONS
-        return
+        with open('googleIdMap.pkl', 'rb') as lookup:
+            lookup = load(lookup)
 
-    # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
-    # cursor.close()
-    # self.conn.close()
+        self.output = {
+            'based_on': self.title,
+            'recommendations': []
+        }
+        for i in self.neighbors[0]:
+            i_gid = lookup[i]
+            i_results = self.gb_query(i_gid)
+            recommendation_output = {
+                "authors": i_results['authors'],
+                "averageRating": i_results['averagerating'],
+                "categories": i_results['categories'],
+                "categories": i_results['categories'],
+                "description": i_results['description'],
+                "googleId": i_results['googleid'],
+                "industryIdentifiers": [
+                    {
+                        "identifier": i_results['isbn'],
+                        "type": "ISBN"
+                    }
+                    ],
+                "isEbook": i_results['isebook'],
+                "language": i_results['lang'],
+                "pageCount": i_results['pagecount'],
+                "publishedDate": i_results['publisheddate'],
+                "publisher": i_results['publisher'],
+                "smallThumbnail": i_results['smallthumbnail'],
+                "textSnippet": i_results['textsnippet'],
+                "thumbnail": i_results['thumbnail'],
+                "title": i_results['title'],
+                "webReaderLink": i_results['webreaderlink']
+            }
 
+            if recommendation_output['authors'] is not None:
+                for i, a in enumerate(recommendation_output['authors']):
+                    recommendation_output['authors'][i] = a.replace("'", "")
+
+            if recommendation_output['categories'] is not None:
+                for i, c in enumerate(recommendation_output['categories']):
+                    recommendation_output['categories'][i] = c.replace("'", "")
+
+            self.output['recommendations'].append(recommendation_output)
+
+        self.cursor.close()
+        self.conn.close()
+        
+        return self.output
 
 if __name__ == "__main__":
     bookshelf = [
@@ -156,6 +212,6 @@ if __name__ == "__main__":
 
     for i in bookshelf:
         book = Book(i)
-        book.runner()
-        print(book.distances, book.neighbors)
-        # print(book.title)
+        recs = book.recommendations()
+        with open(f'dsapi_example_response_{book.title}.json', 'w') as f:
+            json.dump(recs['recommendations'], f, indent=4)
