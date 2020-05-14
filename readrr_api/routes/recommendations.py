@@ -26,7 +26,7 @@ api = GBWrapper()
 
 # load model dependencies
 with open(os.path.join(file_path, 'nlp.pkl'), 'rb') as vocab:
-    nlp = vocab
+    nlp = pickle.load(vocab)
 
 
 @recommendations.route('/recommendations', methods=['POST'])
