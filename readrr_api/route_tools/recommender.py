@@ -12,6 +12,29 @@ from connection import Connection
 from gb_search import GBWrapper
 from populate import execute_queries, get_value
 
+STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best",
+              "edition", "readers", "include", "provide", "information"]
+STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
+
+
+def tokenize(text):
+    '''
+    Input: String
+    Output: list of tokens
+    '''
+    doc = nlp(text)
+
+    tokens = []
+
+    for token in doc:
+        if ((token.text.lower() not in STOP_WORDS) &
+                (token.is_punct is False) &
+                (token.pos_ != 'PRON') &
+                (token.is_alpha is True)):
+            tokens.append(token.text.lower())
+            # tokens.append(token.lemma_.lower())
+    return tokens
+
 
 class Book:
 
@@ -53,7 +76,7 @@ class Book:
     def db_insert(self):
         api = GBWrapper()
         google_books_response = api.search(self.googleId)
-        
+
         # INSERTS GB_QUERY INTO DATABASE
         db_data = get_value(google_books_response['items'][0])
         # execute_queries(db_data, self.conn, self.cursor)
@@ -73,7 +96,7 @@ class Book:
         # LOAD THE MODEL/MATRIX HERE
         with open('nlp.pkl', 'rb') as nlp:
             nlp = load(nlp)
-        STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best", 
+        STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best",
                     "edition", "readers", "include", "provide", "information"]
         STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
         with open('tfidf_model.pkl', 'rb') as tfidf:
@@ -113,7 +136,7 @@ class Book:
             self.description = self.data['description']
             # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
             # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
-        
+
         self.content_recommendations()
 
         with open('googleIdMap.pkl', 'rb') as lookup:
@@ -163,55 +186,5 @@ class Book:
 
         self.cursor.close()
         self.conn.close()
-        
+
         return self.output
-
-if __name__ == "__main__":
-    bookshelf = [
-    {
-        "googleId": "MQeHAAAAQBAJ",
-        "title": "The Martian",
-        "authors": 	"Andy Weir",
-        },
-    {
-        "googleId": "OG0e6djUgUYC",
-        "title": "The Brothers Karamazov",
-        "authors": "Fyodor Dostoevsky",
-        },
-    {
-        "googleId": "4e43zQEACAAJ",
-        "title": "Data Science in Production",
-        "authors": "Ben Weber",
-        }
-        ]
-    
-    with open('nlp.pkl', 'rb') as nlp:
-        nlp = load(nlp)
-
-    STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best", 
-            "edition", "readers", "include", "provide", "information"]
-    STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
-
-    def tokenize(text):
-        '''
-        Input: String
-        Output: list of tokens
-        '''
-        doc = nlp(text)
-
-        tokens = []
-        
-        for token in doc:
-            if ((token.text.lower() not in STOP_WORDS) & 
-                (token.is_punct == False) & 
-                (token.pos_ != 'PRON') & 
-                (token.is_alpha == True)):
-                tokens.append(token.text.lower())
-                # tokens.append(token.lemma_.lower())
-        return tokens
-
-    for i in bookshelf:
-        book = Book(i)
-        recs = book.recommendations()
-        with open(f'dsapi_example_response_{book.title}.json', 'w') as f:
-            json.dump(recs, f, indent=4)
