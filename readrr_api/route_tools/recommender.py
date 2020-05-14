@@ -3,7 +3,7 @@ import os
 from pprint import pprint
 import json
 
-import pandas as pd
+# removed pandas import, replace if necessary
 from psycopg2 import sql
 from psycopg2.extras import DictCursor
 from sklearn.neighbors import NearestNeighbors
