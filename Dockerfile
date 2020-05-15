@@ -1,10 +1,8 @@
-FROM ubuntu:18.04
+FROM python:3.6
 
 ### For reliable logging/io
 ENV PYTHONBUFFERED=1
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y python3-pip python3-dev unzip
+
 
 RUN mkdir /app
 ### Copy requirements first to leverage cache
@@ -12,7 +10,7 @@ COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
-RUN pip3 install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
