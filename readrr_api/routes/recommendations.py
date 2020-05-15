@@ -11,7 +11,7 @@ from .. route_tools.gb_funcs import retrieve_details
 from .. route_tools.recommender import Book, tokenize
 # may need cross origin resource sharing (CORS)
 
-FORMAT = "%(asctime)s - %(message)s"
+FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 # logging.disable(logging.CRITICAL)
 
