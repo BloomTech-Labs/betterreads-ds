@@ -13,7 +13,8 @@ from .. route_tools.connection import Connection
 from .. route_tools.gb_search import GBWrapper
 from .. route_tools.populate import execute_queries, get_value
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(message)s")
+FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
+logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
@@ -26,7 +27,7 @@ STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best",
 STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
 
 
-def tokenizer(text):
+def tokenize(text):
     '''
     Input: String
     Output: list of tokens
@@ -43,9 +44,6 @@ def tokenizer(text):
             tokens.append(token.text.lower())
             # tokens.append(token.lemma_.lower())
     return tokens
-
-
-tokenize = tokenizer
 
 
 class Book:
