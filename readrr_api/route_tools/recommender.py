@@ -1,16 +1,25 @@
 from pickle import load, dump
 import os
-from pprint import pprint
 import json
+import logging
 
 # removed pandas import, replace if necessary
+import spacy
 from psycopg2 import sql
 from psycopg2.extras import DictCursor
 from sklearn.neighbors import NearestNeighbors
 
-from connection import Connection
-from gb_search import GBWrapper
-from populate import execute_queries, get_value
+from .. route_tools.connection import Connection
+from .. route_tools.gb_search import GBWrapper
+from .. route_tools.populate import execute_queries, get_value
+
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(message)s")
+
+r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
+
+# load model dependencies
+with open(os.path.join(r_tools_path, 'nlp.pkl'), 'rb') as vocab:
+    nlp = load(vocab)
 
 STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best",
               "edition", "readers", "include", "provide", "information"]
@@ -43,6 +52,7 @@ class Book:
         self.title = book['title']
         self.conn = Connection().connection
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+        self.pickle_path = path = os.path.dirname(__file__)
 
     def book_check(self):
         # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
@@ -56,7 +66,7 @@ class Book:
         )
         self.cursor.execute(gb_query, (self.googleId,))
         self.data = self.cursor.fetchone()
-        if self.data is not None:
+        if self.data is not None and self.data['description'] is not None:
             return True
 
         # CHECKS IF BOOK IS IN 'goodbooks_books_xml' TABLE
@@ -67,7 +77,7 @@ class Book:
         )
         self.cursor.execute(goodbooks_query, (self.title,))
         self.data = self.cursor.fetchone()
-        if self.data is not None:
+        if self.data is not None and self.data['description'] is not None:
             return True
 
         # RETURNING FALSE MEANS OUR BOOK IS NOT IN EITHER THE XML OR GB
@@ -94,14 +104,13 @@ class Book:
     def content_recommendations(self, top_n=10):
         # USE get_description FUNCTION OR self.description
         # LOAD THE MODEL/MATRIX HERE
-        with open('nlp.pkl', 'rb') as nlp:
-            nlp = load(nlp)
-        STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best",
-                    "edition", "readers", "include", "provide", "information"]
-        STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
-        with open('tfidf_model.pkl', 'rb') as tfidf:
+
+        with open(os.path.join(self.pickle_path, 'tfidf_model.pkl'),
+                  'rb') as tfidf:
             tfidf = load(tfidf)
-        with open('nn.pkl', 'rb') as nn:
+
+        with open(os.path.join(self.pickle_path, 'nn.pkl'),
+                  'rb') as nn:
             nn = load(nn)
 
         # MAKE PREDICTIONS
@@ -132,14 +141,19 @@ class Book:
             self.description = self.data['description']
         else:
             self.db_insert()
-            self.book_check()
-            self.description = self.data['description']
+            if self.book_check():
+                self.description = self.data['description']
+            else:
+                logging.info(f"No description attainable for {self.title}. " +
+                             "Suggest alternatives.")
+                self.description = "Mock testing description"
             # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
             # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
 
         self.content_recommendations()
 
-        with open('googleIdMap.pkl', 'rb') as lookup:
+        with open(os.path.join(self.pickle_path, 'googleIdMap.pkl'),
+                  'rb') as lookup:
             lookup = load(lookup)
 
         self.output = {
