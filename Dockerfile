@@ -20,6 +20,8 @@ WORKDIR /app/readrr_api/route_tools
 RUN unzip nlp.zip && unzip nn.zip && unzip tfidf_model.zip
 WORKDIR /app
 
+EXPOSE 8000
+
 ENTRYPOINT ["python3"]
 
 CMD ["gunicorn_entrypoint.py"]
