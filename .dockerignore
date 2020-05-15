@@ -1,0 +1,6 @@
+readrr_api/route_tools/nlp.pkl
+readrr_api/route_tools/nn.pkl
+readrr_api/route_tools/tfidf.pkl
+*.ipynb
+archive/
+tests/
