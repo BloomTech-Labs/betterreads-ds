@@ -1,6 +1,7 @@
-readrr_api/route_tools/nlp.pkl
-readrr_api/route_tools/nn.pkl
-readrr_api/route_tools/tfidf.pkl
+**/nlp.pkl
+**/nn.pkl
+**/tfidf_model.pkl
 *.ipynb
 archive/
 tests/
+.env
