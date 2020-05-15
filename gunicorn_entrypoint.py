@@ -3,6 +3,10 @@ import gunicorn.app.base
 from readrr_api import create_app
 from readrr_api.route_tools.recommender import tokenize
 
+# class is a workaround for missing tokenize attribute in tfidf
+# container runs gunicorn from a python file as an ENTRYPOINT
+# in order to access variable on module __main__
+
 
 class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
@@ -22,4 +26,7 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
 
 if __name__ == '__main__':
-    StandaloneApplication(create_app()).run()
+    options = {
+        'bind': '%s:%s' % ('0.0.0.0', '8000')
+    }
+    StandaloneApplication(create_app(), options).run()
