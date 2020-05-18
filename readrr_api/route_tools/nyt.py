@@ -1,4 +1,6 @@
+from datetime import datetime
 from json import loads
+from pprint import pprint
 
 from decouple import config
 from requests import get
@@ -29,3 +31,10 @@ class NYT:
     def get(self, book_list):
         # GET CURRENT RESULTS FROM DB
         return
+
+if __name__ == "__main__":
+    nyt = NYT()
+    # pprint(nyt.get_books('combined-print-and-e-book-fiction')[0])
+    results = nyt.get_books('combined-print-and-e-book-nonfiction')
+    output = results['results']['bestsellers_date']
+    pprint(output)
