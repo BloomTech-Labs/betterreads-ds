@@ -41,11 +41,11 @@ def recommend():
     user_books = request.get_json()
 
     with open(os.path.join(r_tools_path, 'tfidf_model.pkl'),
-          'rb') as tfidf:
+              'rb') as tfidf:
         tfidf = pickle.load(tfidf)
 
     with open(os.path.join(r_tools_path, 'nn.pkl'),
-          'rb') as nn:
+              'rb') as nn:
         nn = pickle.load(nn)
 
     output = []
