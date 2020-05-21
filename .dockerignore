@@ -1,0 +1,8 @@
+**/nlp.pkl
+**/nn.pkl
+**/tfidf_model.pkl
+notebooks/
+*.ipynb
+archive/
+tests/
+.env

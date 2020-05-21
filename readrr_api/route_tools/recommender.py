@@ -1,16 +1,49 @@
 from pickle import load, dump
 import os
-from pprint import pprint
 import json
+import logging
 
-import pandas as pd
+# removed pandas import, replace if necessary
+import spacy
 from psycopg2 import sql
 from psycopg2.extras import DictCursor
 from sklearn.neighbors import NearestNeighbors
 
-from connection import Connection
-from gb_search import GBWrapper
-from populate import execute_queries, get_value
+from .. route_tools.connection import Connection
+from .. route_tools.gb_search import GBWrapper
+from .. route_tools.populate import execute_queries, get_value
+
+FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
+logging.basicConfig(level=logging.DEBUG, format=FORMAT)
+
+r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
+
+# load model dependencies
+with open(os.path.join(r_tools_path, 'nlp.pkl'), 'rb') as vocab:
+    nlp = load(vocab)
+
+STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best",
+              "edition", "readers", "include", "provide", "information"]
+STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
+
+
+def tokenize(text):
+    '''
+    Input: String
+    Output: list of tokens
+    '''
+    doc = nlp(text)
+
+    tokens = []
+
+    for token in doc:
+        if ((token.text.lower() not in STOP_WORDS) &
+                (token.is_punct is False) &
+                (token.pos_ != 'PRON') &
+                (token.is_alpha is True)):
+            tokens.append(token.text.lower())
+
+    return tokens
 
 
 class Book:
@@ -20,6 +53,7 @@ class Book:
         self.title = book['title']
         self.conn = Connection().connection
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+        self.pickle_path = path = os.path.dirname(__file__)
 
     def book_check(self):
         # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
@@ -33,7 +67,7 @@ class Book:
         )
         self.cursor.execute(gb_query, (self.googleId,))
         self.data = self.cursor.fetchone()
-        if self.data is not None:
+        if self.data is not None and self.data['description'] is not None:
             return True
 
         # CHECKS IF BOOK IS IN 'goodbooks_books_xml' TABLE
@@ -44,7 +78,7 @@ class Book:
         )
         self.cursor.execute(goodbooks_query, (self.title,))
         self.data = self.cursor.fetchone()
-        if self.data is not None:
+        if self.data is not None and self.data['description'] is not None:
             return True
 
         # RETURNING FALSE MEANS OUR BOOK IS NOT IN EITHER THE XML OR GB
@@ -53,7 +87,7 @@ class Book:
     def db_insert(self):
         api = GBWrapper()
         google_books_response = api.search(self.googleId)
-        
+
         # INSERTS GB_QUERY INTO DATABASE
         db_data = get_value(google_books_response['items'][0])
         # execute_queries(db_data, self.conn, self.cursor)
@@ -68,18 +102,9 @@ class Book:
         # REFERENCE routes/recommendations.py
         return
 
-    def content_recommendations(self, top_n=10):
+    def content_recommendations(self, nn, tfidf, top_n=10):
         # USE get_description FUNCTION OR self.description
         # LOAD THE MODEL/MATRIX HERE
-        with open('nlp.pkl', 'rb') as nlp:
-            nlp = load(nlp)
-        STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best", 
-                    "edition", "readers", "include", "provide", "information"]
-        STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
-        with open('tfidf_model.pkl', 'rb') as tfidf:
-            tfidf = load(tfidf)
-        with open('nn.pkl', 'rb') as nn:
-            nn = load(nn)
 
         # MAKE PREDICTIONS
         self.prediction = tfidf.transform([self.description])
@@ -104,19 +129,30 @@ class Book:
         self.cursor.execute(gb_query, (gid,))
         return self.cursor.fetchone()
 
-    def recommendations(self):
+    def recommendations(self, model=None, vectorizer=None,):
+        """
+        Get recommendations for either type of model
+
+        vectorizer: If content model, this may be something like TF-IDF
+        model: The algorithm used for recommendations (i.e. NN, SVD)
+        """
         if self.book_check():
             self.description = self.data['description']
         else:
             self.db_insert()
-            self.book_check()
-            self.description = self.data['description']
+            if self.book_check():
+                self.description = self.data['description']
+            else:
+                logging.info(f"No description attainable for {self.title}. " +
+                             "Suggest alternatives.")
+                self.description = "Mock testing description"
             # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
             # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
-        
-        self.content_recommendations()
 
-        with open('googleIdMap.pkl', 'rb') as lookup:
+        self.content_recommendations(model, vectorizer)
+
+        with open(os.path.join(self.pickle_path, 'googleIdMap.pkl'),
+                  'rb') as lookup:
             lookup = load(lookup)
 
         self.output = {
@@ -163,55 +199,5 @@ class Book:
 
         self.cursor.close()
         self.conn.close()
-        
+
         return self.output
-
-if __name__ == "__main__":
-    bookshelf = [
-    {
-        "googleId": "MQeHAAAAQBAJ",
-        "title": "The Martian",
-        "authors": 	"Andy Weir",
-        },
-    {
-        "googleId": "OG0e6djUgUYC",
-        "title": "The Brothers Karamazov",
-        "authors": "Fyodor Dostoevsky",
-        },
-    {
-        "googleId": "4e43zQEACAAJ",
-        "title": "Data Science in Production",
-        "authors": "Ben Weber",
-        }
-        ]
-    
-    with open('nlp.pkl', 'rb') as nlp:
-        nlp = load(nlp)
-
-    STOP_WORDS = ["new", "book", "author", "story", "life", "work", "best", 
-            "edition", "readers", "include", "provide", "information"]
-    STOP_WORDS = nlp.Defaults.stop_words.union(STOP_WORDS)
-
-    def tokenize(text):
-        '''
-        Input: String
-        Output: list of tokens
-        '''
-        doc = nlp(text)
-
-        tokens = []
-        
-        for token in doc:
-            if ((token.text.lower() not in STOP_WORDS) & 
-                (token.is_punct == False) & 
-                (token.pos_ != 'PRON') & 
-                (token.is_alpha == True)):
-                tokens.append(token.text.lower())
-                # tokens.append(token.lemma_.lower())
-        return tokens
-
-    for i in bookshelf:
-        book = Book(i)
-        recs = book.recommendations()
-        with open(f'dsapi_example_response_{book.title}.json', 'w') as f:
-            json.dump(recs, f, indent=4)
