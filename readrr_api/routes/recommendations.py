@@ -18,6 +18,13 @@ recommendations = Blueprint("recommendations", __name__)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
+# open compressed hybrid matrix
+with open("compressed_sim_matrix.plk", "rb") as csm:
+    compsim = pickle.load(csm)
+
+# open main lookup index
+with open("master_hybrid_index.pkl", "rb") as mhi:
+    master_index = pickle.load(mhi)
 
 def fetch_recs(output_list, target_book, nn, tfidf):
     """
