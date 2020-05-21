@@ -5,6 +5,7 @@ from pprint import pprint
 from decouple import config
 from requests import get
 
+from gb_search import GBWrapper
 # IMPORT CONNECTION
 
 class NYT:
@@ -24,8 +25,23 @@ class NYT:
         request = get(request_url)
         return loads(request.text)
     
-    def update(self):
-        # MAY WANT TO IMPORT FROM ELSEWHERE
+    def get_results(self, list_type):
+        response = self.get_books(list_type)
+
+        return {
+            'rank': response['results']['books'][0]['rank'],
+            'isbn': response['results']['books'][0]['primary_isbn13']
+        }
+
+    def gb_query(self, isbn):
+        gb = GBWrapper(method='isbn')
+        # request_url = f'https://www.googleapis.com/books/v1/volumes?q=isbn:'\
+        #     f'{isbn}'
+        # request = get(request_url)
+        # return request.json()
+        return gb.search(str(isbn))
+
+    def gb_insert(self, response):
         return
 
     def get(self, book_list):
@@ -35,6 +51,5 @@ class NYT:
 if __name__ == "__main__":
     nyt = NYT()
     # pprint(nyt.get_books('combined-print-and-e-book-fiction')[0])
-    results = nyt.get_books('combined-print-and-e-book-nonfiction')
-    output = results['results']['bestsellers_date']
-    pprint(output)
+    results = nyt.get_results('combined-print-and-e-book-nonfiction')
+    pprint(nyt.gb_query('9781984801258'))
