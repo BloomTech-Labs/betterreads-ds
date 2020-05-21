@@ -1,7 +1,11 @@
+import xml.etree.ElementTree as ET
 import csv
-import os
+import os #NECESSARY? NEED TO SET PATH
 
-from connection import connection
+from bs4 import BeautifulSoup
+import pandas as pd #NECESSARY?
+
+from readrr_api.route_tools.connection import Connection
 
 db_schema = {
     'book_tags': {
@@ -50,6 +54,53 @@ db_schema = {
 }
 
 
+def book_parser(path=None):
+    tree = ET.parse(path)
+    root = tree.getroot()
+
+    ignore = {
+        'reviews_widget', 'popular_shelves', 'book_links', 'buy_links',
+        'series_works', 'similar_books'
+        }
+
+    row = {}
+    for element in root.find('book'):
+        if element.tag in ignore:
+            continue
+        if element.tag == 'description' and element.text is not None:
+            soup = BeautifulSoup(element.text, 'html.parser')
+            row[element.tag] = soup.text
+            continue
+        row[element.tag] = element.text
+        if len(list(element.iter())) > 1:
+            for child in element.iter():
+                row[f'{element.tag}_{child.tag}'] = child.text
+    return row
+
+
+def xml_insert():
+    # CHECK FUNCTION INPUTS
+    path = 'goodbooks-10k/books_xml/books_xml/books_xml/'
+    books = os.listdir(path)
+
+    data = {}
+    for i, book in enumerate(books):
+        # if i % 1000 == 0:
+        #     print(f'Parsing book {i}')
+        row = book_parser(path + book)
+        data[book.split('.')[0]] = row
+
+    df = pd.DataFrame.from_dict(data=data, orient='index')
+    # NEED TO REWRITE THIS WITH PSYCOPG
+    # engine = connection()
+    # df.to_sql(
+    #     'goodbooks_books_xml',
+    #     con=engine,
+    #     if_exists='replace',
+    #     index=False
+    # )
+
+
 def create_query(table_name, schema_dict):
     '''
     see datatypes documentation here:
@@ -63,10 +114,8 @@ def create_query(table_name, schema_dict):
     return f'''CREATE TABLE IF NOT EXISTS goodbooks_{table_name} (
     {columns_str})'''
 
-
-if __name__ == "__main__":
-
-    engine = connection()
+def goodbooks_insert():
+    # 
     path = 'goodbooks-10k/'
 
     for file in os.listdir(path):
@@ -82,3 +131,13 @@ if __name__ == "__main__":
                     # NEED TO FIGURE OUT INSERT STATEMENT WITHIN SQLALCHEMY
                     if i >= 5:
                         break
+    return
+
+
+if __name__ == "__main__":
+
+    # CONNECTION GOES HERE
+
+    # XML INSERT
+    # GOODBOOKS REPO MUST BE CLONED INTO MAIN REPO
+    # GOODBOOKS INSERT
