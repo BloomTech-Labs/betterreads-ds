@@ -1,5 +1,5 @@
 from decouple import config
-from psycopg2 import connect
+from sqlalchemy import create_engine
 
 
 class Connection:
