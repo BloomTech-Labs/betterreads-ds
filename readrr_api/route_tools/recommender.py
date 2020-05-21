@@ -42,7 +42,7 @@ def tokenize(text):
                 (token.pos_ != 'PRON') &
                 (token.is_alpha is True)):
             tokens.append(token.text.lower())
-            # tokens.append(token.lemma_.lower())
+
     return tokens
 
 
@@ -102,17 +102,9 @@ class Book:
         # REFERENCE routes/recommendations.py
         return
 
-    def content_recommendations(self, top_n=10):
+    def content_recommendations(self, nn, tfidf, top_n=10):
         # USE get_description FUNCTION OR self.description
         # LOAD THE MODEL/MATRIX HERE
-
-        with open(os.path.join(self.pickle_path, 'tfidf_model.pkl'),
-                  'rb') as tfidf:
-            tfidf = load(tfidf)
-
-        with open(os.path.join(self.pickle_path, 'nn.pkl'),
-                  'rb') as nn:
-            nn = load(nn)
 
         # MAKE PREDICTIONS
         self.prediction = tfidf.transform([self.description])
@@ -137,7 +129,13 @@ class Book:
         self.cursor.execute(gb_query, (gid,))
         return self.cursor.fetchone()
 
-    def recommendations(self):
+    def recommendations(self, model=None, vectorizer=None,):
+        """
+        Get recommendations for either type of model
+
+        vectorizer: If content model, this may be something like TF-IDF
+        model: The algorithm used for recommendations (i.e. NN, SVD)
+        """
         if self.book_check():
             self.description = self.data['description']
         else:
@@ -151,7 +149,7 @@ class Book:
             # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
             # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
 
-        self.content_recommendations()
+        self.content_recommendations(model, vectorizer)
 
         with open(os.path.join(self.pickle_path, 'googleIdMap.pkl'),
                   'rb') as lookup:
