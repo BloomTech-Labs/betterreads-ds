@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+flask = "*"
+flask-cors = "*"
+requests = "*"
+scikit-learn = "==0.22.2.post1"
+gunicorn = "*"
+beautifulsoup4 = "*"
+python-decouple = "*"
+<<<<<<< HEAD
+psycopg2-binary = "*"
+=======
+spacy = "*"
+>>>>>>> e6b857e4531bcb98cdec97ad9b6f49176b6eb497
+
+[requires]
+python_version = "3.7"
