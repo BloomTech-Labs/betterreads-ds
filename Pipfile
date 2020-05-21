@@ -10,11 +10,10 @@ flask = "*"
 flask-cors = "*"
 requests = "*"
 scikit-learn = "==0.22.2.post1"
-pandas = "*"
 gunicorn = "*"
-beautifulsoup4 = "*"
-python-decouple = "*"
 psycopg2-binary = "*"
+python-decouple = "*"
+spacy = "*"
 
 [requires]
 python_version = "3.7"
