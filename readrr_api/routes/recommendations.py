@@ -19,14 +19,32 @@ recommendations = Blueprint("recommendations", __name__)
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
 # open compressed hybrid matrix
-with open("compressed_sim_matrix.plk", "rb") as csm:
+with open(os.path.join(
+          r_tools_path, "compressed_sim_matrix.pkl"), "rb") as csm:
     compsim = pickle.load(csm)
 
 # open main lookup index
-with open("master_hybrid_index.pkl", "rb") as mhi:
+with open(os.path.join(
+          r_tools_path, "master_hybrid_index.pkl"), "rb") as mhi:
     master_index = pickle.load(mhi)
 
-def fetch_recs(output_list, target_book, nn, tfidf):
+# open vectorizer for search
+with open(os.path.join(
+          r_tools_path, "search_vectorizer.pkl"), "rb") as sv:
+    vectorizer = pickle.load(sv)
+
+# open nearest neighbor for title search
+with open(os.path.join(
+          r_tools_path, "search_neighbors.pkl"), "rb") as sn:
+    search_nn = pickle.load(sn)
+
+with open(os.path.join(
+          r_tools_path, "book_search_index.pkl"), "rb") as bsi:
+    book_search_index = pickle.load(bsi)
+
+
+def fetch_recs(output_list, target_book, nn, tfidf, sim_matrix,
+               sim_index, s_vectorizer, s_neighbors, bk_srch_idx):
     """
     Gets recommendations from the Book class
     and appends the list that will be part of
@@ -36,7 +54,8 @@ def fetch_recs(output_list, target_book, nn, tfidf):
     target_book: book in user bookshelf
     """
     book = Book(target_book)
-    recs = book.recommendations(nn, tfidf)
+    recs = book.recommendations(nn, tfidf, sim_matrix, sim_index,
+                                s_vectorizer, s_neighbors, bk_srch_idx)
     output_list.append(recs)
 
 
@@ -61,7 +80,10 @@ def recommend():
     for b in user_books:
         # start a thread for each book to get recs
         thread_obj = threading.Thread(target=fetch_recs,
-                                      args=(output, b, nn, tfidf))
+                                      args=(output, b, nn, tfidf,
+                                            compsim, master_index,
+                                            vectorizer, search_nn,
+                                            book_search_index))
 
         thread_list.append(thread_obj)
         thread_obj.start()
