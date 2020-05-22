@@ -15,7 +15,7 @@ from .. route_tools.gb_funcs import retrieve_details
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-# logging.disable(logging.DEBUG)
+logging.disable(logging.DEBUG)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
