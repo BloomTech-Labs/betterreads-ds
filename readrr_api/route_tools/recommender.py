@@ -15,7 +15,7 @@ from .. route_tools.gb_funcs import retrieve_details
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-logging.disable(logging.DEBUG)
+# logging.disable(logging.DEBUG)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
@@ -51,6 +51,10 @@ class Book:
 
     def __init__(self, book):
         self.googleId = book['googleId']
+        if type(book['authors']) == list:
+            self.author = book['authors'][0]
+        else:
+            self.author = book['authors']
         self.title = book['title']
         self.conn = Connection().connection
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
@@ -182,7 +186,8 @@ class Book:
         # recommendations here. In the interest of time, the hybrid
         # approach is directly implemented here
         THRESH = 0.5
-        title_transformed = s_vectorizer.transform([self.title])
+        search_title = self.title + ' ' + self.author
+        title_transformed = s_vectorizer.transform([search_title])
         dist, ind = s_neighbors.kneighbors(title_transformed)
         dist = dist.flatten()
         ind = ind.flatten()
@@ -199,6 +204,7 @@ class Book:
             idx = sim_index.index.tolist().index(hybrid_title)
             sim_scores = list(enumerate(sim_matrix[idx].toarray().flatten()))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+            sim_scores = sim_scores[1:11]
             indices = [i[0] for i in sim_scores]
             titles = sim_index.iloc[indices].index
             # set an iterable for filling in data structure later
@@ -256,9 +262,9 @@ class Book:
                         i_results = self.gb_title_query(i)
                         if i_results is None:
                             # failing that, simply send back api data
-                            book_details = api_details
+                            book_details.append(api_details)
                             logging.debug("DETAILS ACQUIRED VIA API")
-                            return self.output
+                            continue
 
             else:
                 logging.debug(f"Using lookup with {model_type}")
