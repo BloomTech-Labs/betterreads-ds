@@ -72,8 +72,8 @@ def recommend():
 
     # try to select favorites
     for book in user_books:
-        if book['favorite']
-            favorites.append(book['title'])
+        if book['favorite']:
+            favorites.append(book)
     # if there are no favorites, just select any book
     if favorites == []:
         b = random.choice(user_books)
@@ -96,7 +96,7 @@ def recommend():
 
 
 @recommendations.route('/recommendations/bookshelf', methods=['POST'])
-def recommend():
+def recommend_all():
     """
     Provide recommendations based on entire user bookshelf.
     """
