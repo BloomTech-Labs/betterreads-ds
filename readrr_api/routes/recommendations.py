@@ -95,7 +95,7 @@ def recommend():
     return jsonify(recs)
 
 
-@recommendations.route('/recommendations', methods=['POST'])
+@recommendations.route('/recommendations/bookshelf', methods=['POST'])
 def recommend():
     """
     Provide recommendations based on entire user bookshelf.
