@@ -262,6 +262,9 @@ class Book:
                         i_results = self.gb_title_query(i)
                         if i_results is None:
                             # failing that, simply send back api data
+                            # change 'id' to 'googleId' before sending
+                            for item in api_details:
+                                item['googleId'] = item.pop('id')
                             book_details.append(api_details)
                             logging.debug("DETAILS ACQUIRED VIA API")
                             continue
