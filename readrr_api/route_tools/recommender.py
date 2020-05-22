@@ -12,9 +12,11 @@ from sklearn.neighbors import NearestNeighbors
 from .. route_tools.connection import Connection
 from .. route_tools.gb_search import GBWrapper
 from .. route_tools.populate import execute_queries, get_value
+from .. route_tools.gb_funcs import retrieve_details
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
+logging.disable(logging.DEBUG)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
@@ -106,14 +108,17 @@ class Book:
             google_books_response = api.search(self.googleId)
 
         # INSERTS GB_QUERY INTO DATABASE
-        logging.info("GETTING API DATA...")
-        db_data = get_value(google_books_response['items'][0])
-        logging.info("API DATA: " + str(db_data))
+        logging.debug("GETTING API DATA...")
+        api_data = get_value(google_books_response['items'][0])
         if isbn is not None:
-            gid = db_data['googleid']
-        # execute_queries(db_data, self.conn, self.cursor)
-        execute_queries(db_data, self.conn)
-        return gid
+            gid = api_data[0]
+            details = retrieve_details(google_books_response)
+        else:
+            gid = None
+            details = None
+        # execute_queries(api_data, self.conn, self.cursor)
+        execute_queries(api_data, self.conn)
+        return gid, details
 
     def collaborative_recommendations(self, top_n=10):
         # LOAD MODEL/MATRIX HERE
@@ -147,12 +152,23 @@ class Book:
         return self.cursor.fetchone()
 
     def gb_id_query(self, isbn):
+        """Queries DB using isbn"""
         gb_isbn_query = sql.SQL(
             "SELECT * "
             "FROM gb_data "
             "WHERE isbn = %s LIMIT 1;"
         )
         self.cursor.execute(gb_isbn_query, (isbn,))
+        return self.cursor.fetchone()
+
+    def gb_title_query(self, title):
+        """Queries DB using title"""
+        gb_title_query = sql.SQL(
+            "SELECT * "
+            "FROM gb_data "
+            "WHERE title = %s LIMIT 1;"
+        )
+        self.cursor.execute(gb_title_query, (title,))
         return self.cursor.fetchone()
 
     def recommendations(self, model, vectorizer, sim_matrix, sim_index,
@@ -198,7 +214,7 @@ class Book:
                 if self.book_check():
                     self.description = self.data['description']
                 else:
-                    logging.info(
+                    logging.debug(
                         f"No description attainable for {self.title}. " +
                         "Suggest alternatives."
                     )
@@ -213,29 +229,38 @@ class Book:
             with open(os.path.join(self.pickle_path, 'googleIdMap.pkl'),
                       'rb') as lkp:
                 lookup = load(lkp)
-                logging.info("Loaded lookup")
+                logging.debug("Loaded lookup")
 
+        book_details = []
         self.output = {
             'based_on': self.title,
-            'recommendations': []
+            'recommendations': book_details
         }
 
-        logging.info("Model Type: " + model_type)
+        logging.debug("Model Type: " + model_type)
         for i in iterable:
             if model_type is "hybrid":
                 # get industry_identifier
-                logging.info(f"Starting hybrid output with \"{i}\" from iterable")
+                logging.debug(f"Starting hybrid output with \"{i}\" from iterable")
                 ii = sim_index.loc[i]['isbn13'] 
                 i_results = self.gb_id_query(ii)
                 if i_results is None:
-                    logging.info("RESULTS BEFORE: " + str(i_results))
                     # if results are none, make gbapi call on isbn
-                    gid = self.db_insert(isbn=ii)
+                    gid, api_details = self.db_insert(isbn=ii)
+                    logging.debug("GOOGLE ID ACQUIRED: " + gid)
                     # switch to google id for reference to avoid empty data
                     i_results = self.gb_query(gid)
-                    logging.info("RESULTS AFTER: " + str(i_results))
+                    if i_results is None:
+                        # use title to query db if gid fails
+                        i_results = self.gb_title_query(i)
+                        if i_results is None:
+                            # failing that, simply send back api data
+                            book_details = api_details
+                            logging.debug("DETAILS ACQUIRED VIA API")
+                            return self.output
+
             else:
-                logging.info(f"Using lookup with {model_type}")
+                logging.debug(f"Using lookup with {model_type}")
                 i_gid = lookup[i]
                 i_results = self.gb_query(i_gid)
 
@@ -272,7 +297,7 @@ class Book:
                 for i, c in enumerate(recommendation_output['categories']):
                     recommendation_output['categories'][i] = c.replace("'", "")
 
-            self.output['recommendations'].append(recommendation_output)
+            book_details.append(recommendation_output)
 
         self.cursor.close()
         self.conn.close()
