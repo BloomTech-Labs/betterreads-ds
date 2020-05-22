@@ -55,16 +55,30 @@ class Book:
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
         self.pickle_path = path = os.path.dirname(__file__)
 
-    def book_check(self):
+    def book_check(self, check_isbn=False, isbn=None):
         # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
         # DEVELOPMENT OPPORTUNITY: MERGE TWO TABLES TO ONE?
 
         # CHECKS IF BOOK IS IN 'gb_data' TABLE
+        gb_isbn_query = sql.SQL(
+            "SELECT * "
+            "FROM gb_data "
+            "WHERE isbn = %s LIMIT 1;"
+        )
         gb_query = sql.SQL(
             "SELECT * "
             "FROM gb_data "
             "WHERE googleid = %s LIMIT 1;"
         )
+
+        if check_isbn:
+            self.cursor.execute(gb_query, (isbn,))
+            response = self.cursor.fetchone()
+            if response is not None:
+                return response
+            else:
+                return False
+
         self.cursor.execute(gb_query, (self.googleId,))
         self.data = self.cursor.fetchone()
         if self.data is not None and self.data['description'] is not None:
@@ -84,15 +98,22 @@ class Book:
         # RETURNING FALSE MEANS OUR BOOK IS NOT IN EITHER THE XML OR GB
         return False
 
-    def db_insert(self):
+    def db_insert(self, isbn=None):
         api = GBWrapper()
-        google_books_response = api.search(self.googleId)
+        if isbn is not None:
+            google_books_response = api.search(isbn)
+        else:
+            google_books_response = api.search(self.googleId)
 
         # INSERTS GB_QUERY INTO DATABASE
+        logging.info("GETTING API DATA...")
         db_data = get_value(google_books_response['items'][0])
+        logging.info("API DATA: " + str(db_data))
+        if isbn is not None:
+            gid = db_data['googleid']
         # execute_queries(db_data, self.conn, self.cursor)
         execute_queries(db_data, self.conn)
-        return
+        return gid
 
     def collaborative_recommendations(self, top_n=10):
         # LOAD MODEL/MATRIX HERE
@@ -116,10 +137,6 @@ class Book:
         )
         return
 
-    def hybrid_recommendations(self):
-        # WEIGHT COLLABORATIVE / CONTENT RECOMMENDATIONS
-        return
-
     def gb_query(self, gid):
         gb_query = sql.SQL(
             "SELECT * "
@@ -129,39 +146,99 @@ class Book:
         self.cursor.execute(gb_query, (gid,))
         return self.cursor.fetchone()
 
-    def recommendations(self, model=None, vectorizer=None,):
+    def gb_id_query(self, isbn):
+        gb_isbn_query = sql.SQL(
+            "SELECT * "
+            "FROM gb_data "
+            "WHERE isbn = %s LIMIT 1;"
+        )
+        self.cursor.execute(gb_isbn_query, (isbn,))
+        return self.cursor.fetchone()
+
+    def recommendations(self, model, vectorizer, sim_matrix, sim_index,
+                        s_vectorizer, s_neighbors, bk_srch_idx):
         """
         Get recommendations for either type of model
 
         vectorizer: If content model, this may be something like TF-IDF
         model: The algorithm used for recommendations (i.e. NN, SVD)
         """
-        if self.book_check():
-            self.description = self.data['description']
+        # It seems the intent here was to provide various sorts of
+        # recommendations here. In the interest of time, the hybrid
+        # approach is directly implemented here
+        THRESH = 0.5
+        title_transformed = s_vectorizer.transform([self.title])
+        dist, ind = s_neighbors.kneighbors(title_transformed)
+        dist = dist.flatten()
+        ind = ind.flatten()
+        close_titles = list(zip(dist, ind))[0]
+
+        if close_titles[0] > THRESH:
+            i = close_titles[1]
+            hybrid_title = bk_srch_idx[i]
         else:
-            self.db_insert()
+            hybrid_title = None
+
+        if hybrid_title:
+            # get the index of the title in relation to sim_index
+            idx = sim_index.index.tolist().index(hybrid_title)
+            sim_scores = list(enumerate(sim_matrix[idx].toarray().flatten()))
+            sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+            indices = [i[0] for i in sim_scores]
+            titles = sim_index.iloc[indices].index
+            # set an iterable for filling in data structure later
+            iterable = titles
+            model_type = "hybrid"
+        else:
+            # continue on to content attempt
             if self.book_check():
                 self.description = self.data['description']
             else:
-                logging.info(f"No description attainable for {self.title}. " +
-                             "Suggest alternatives.")
-                self.description = "Mock testing description"
-            # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
-            # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
+                self.db_insert()
+                if self.book_check():
+                    self.description = self.data['description']
+                else:
+                    logging.info(
+                        f"No description attainable for {self.title}. " +
+                        "Suggest alternatives."
+                    )
+                    self.description = "Mock testing description"
+                # BE AWARE OF EXCEPTION OF RETURNING NO DESCRIPTION
+                # TO DO: SNIPPET QUERY IF DESCRIPTION UNAVAILABLE
 
-        self.content_recommendations(model, vectorizer)
+            self.content_recommendations(model, vectorizer)
+            iterable = self.neighbors[0][1:]
+            model_type = "content"
 
-        with open(os.path.join(self.pickle_path, 'googleIdMap.pkl'),
-                  'rb') as lookup:
-            lookup = load(lookup)
+            with open(os.path.join(self.pickle_path, 'googleIdMap.pkl'),
+                      'rb') as lkp:
+                lookup = load(lkp)
+                logging.info("Loaded lookup")
 
         self.output = {
             'based_on': self.title,
             'recommendations': []
         }
-        for i in self.neighbors[0][1:]:
-            i_gid = lookup[i]
-            i_results = self.gb_query(i_gid)
+
+        logging.info("Model Type: " + model_type)
+        for i in iterable:
+            if model_type is "hybrid":
+                # get industry_identifier
+                logging.info(f"Starting hybrid output with \"{i}\" from iterable")
+                ii = sim_index.loc[i]['isbn13'] 
+                i_results = self.gb_id_query(ii)
+                if i_results is None:
+                    logging.info("RESULTS BEFORE: " + str(i_results))
+                    # if results are none, make gbapi call on isbn
+                    gid = self.db_insert(isbn=ii)
+                    # switch to google id for reference to avoid empty data
+                    i_results = self.gb_query(gid)
+                    logging.info("RESULTS AFTER: " + str(i_results))
+            else:
+                logging.info(f"Using lookup with {model_type}")
+                i_gid = lookup[i]
+                i_results = self.gb_query(i_gid)
+
             recommendation_output = {
                 "authors": i_results['authors'],
                 "averageRating": i_results['averagerating'],
