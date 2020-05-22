@@ -2,6 +2,7 @@ import logging
 import threading
 import os
 import pickle
+import random
 
 from flask import request, jsonify, Blueprint
 from .. route_tools.recommender import Book, tokenize
@@ -62,7 +63,42 @@ def fetch_recs(output_list, target_book, nn, tfidf, sim_matrix,
 @recommendations.route('/recommendations', methods=['POST'])
 def recommend():
     """
-    Provide recommendations based on user bookshelf.
+    Provide recommendations based on one book in user bookshelf
+    or a single book
+    """
+    user_books = request.get_json()
+
+    favorites = []
+
+    # try to select favorites
+    for book in user_books:
+        if book['favorite']
+            favorites.append(book['title'])
+    # if there are no favorites, just select any book
+    if favorites == []:
+        b = random.choice(user_books)
+    else:
+        b = random.choice(favorites)
+
+    with open(os.path.join(r_tools_path, 'tfidf_model.pkl'),
+              'rb') as tfidf:
+        tfidf = pickle.load(tfidf)
+
+    with open(os.path.join(r_tools_path, 'nn.pkl'),
+              'rb') as nn:
+        nn = pickle.load(nn)
+
+    book = Book(b)
+    recs = book.recommendations(nn, tfidf, compsim, master_index,
+                                vectorizer, search_nn, book_search_index)
+
+    return jsonify(recs)
+
+
+@recommendations.route('/recommendations', methods=['POST'])
+def recommend():
+    """
+    Provide recommendations based on entire user bookshelf.
     """
     user_books = request.get_json()
 
