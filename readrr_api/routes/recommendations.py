@@ -10,7 +10,7 @@ from .. route_tools.recommender import Book, tokenize
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.DEBUG)
 
 if tokenize:
     logging.info('"tokenize" loaded in ' + str(__name__))
@@ -69,7 +69,6 @@ def recommend():
     user_books = request.get_json()
 
     favorites = []
-
     # try to select favorites
     for book in user_books:
         if book['favorite']:
@@ -79,6 +78,8 @@ def recommend():
         b = random.choice(user_books)
     else:
         b = random.choice(favorites)
+    logging.debug(f"Book title: {b['title']}")
+    logging.debug(f"Length of favorites: {len(favorites)}")
 
     with open(os.path.join(r_tools_path, 'tfidf_model.pkl'),
               'rb') as tfidf:
@@ -91,6 +92,7 @@ def recommend():
     book = Book(b)
     recs = book.recommendations(nn, tfidf, compsim, master_index,
                                 vectorizer, search_nn, book_search_index)
+    logging.debug(f"Number of Recs: {len(recs['recommendations'])}")
 
     return jsonify(recs)
 
