@@ -1,6 +1,5 @@
-from pickle import load, dump
+from pickle import load
 import os
-import json
 import logging
 
 # removed pandas import, replace if necessary
@@ -55,7 +54,7 @@ class Book:
         self.title = book['title']
         self.conn = Connection().connection
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-        self.pickle_path = path = os.path.dirname(__file__)
+        self.pickle_path = os.path.dirname(__file__)
 
     def book_check(self, check_isbn=False, isbn=None):
         # CURRENTLY THE GOOGLE BOOKS DATA TAKES PRECENDENCE
@@ -241,8 +240,10 @@ class Book:
         for i in iterable:
             if model_type is "hybrid":
                 # get industry_identifier
-                logging.debug(f"Starting hybrid output with \"{i}\" from iterable")
-                ii = sim_index.loc[i]['isbn13'] 
+                logging.debug(
+                        f"Starting hybrid output with \"{i}\" from iterable"
+                )
+                ii = sim_index.loc[i]['isbn13']
                 i_results = self.gb_id_query(ii)
                 if i_results is None:
                     # if results are none, make gbapi call on isbn
@@ -267,7 +268,6 @@ class Book:
             recommendation_output = {
                 "authors": i_results['authors'],
                 "averageRating": i_results['averagerating'],
-                "categories": i_results['categories'],
                 "categories": i_results['categories'],
                 "description": i_results['description'],
                 "googleId": i_results['googleid'],
