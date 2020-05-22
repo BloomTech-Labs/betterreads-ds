@@ -1,6 +1,6 @@
-**/nlp.pkl
-**/nn.pkl
-**/tfidf_model.pkl
+*.pkl
+!googleIdMap.pkl
+compressed_sim_matrix.zip
 notebooks/
 *.ipynb
 archive/
