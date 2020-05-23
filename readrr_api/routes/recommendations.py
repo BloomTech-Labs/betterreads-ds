@@ -10,7 +10,7 @@ from .. route_tools.recommender import Book, tokenize
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-# logging.disable(logging.DEBUG)
+logging.disable(logging.DEBUG)
 
 if tokenize:
     logging.info('"tokenize" loaded in ' + str(__name__))
