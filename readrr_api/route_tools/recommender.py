@@ -275,7 +275,7 @@ class Book:
                     i_results['googleid'] is None
                 except TypeError:
                     # if the id query failed, use title
-                    i_results = self.gb_title_query(self.title)
+                    i_results = self.gb_title_query(i)
                 if i_results is None:
                     logging.debug(
                         "Industry ID/title not found in DB, using gbapi"
