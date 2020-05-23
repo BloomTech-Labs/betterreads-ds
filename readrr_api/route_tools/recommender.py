@@ -272,7 +272,7 @@ class Book:
                 i_results = self.gb_id_query(ii)
                 # as a check, try to get googleid key
                 try:
-                    i_results['googleid'] != None
+                    i_results['googleid'] is None
                 except TypeError:
                     # if the id query failed, use title
                     i_results = self.gb_title_query(self.title)
