@@ -15,7 +15,7 @@ from .. route_tools.gb_funcs import retrieve_details
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-logging.disable(logging.DEBUG)
+# logging.disable(logging.DEBUG)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
@@ -85,6 +85,17 @@ class Book:
                 return False
 
         self.cursor.execute(gb_query, (self.googleId,))
+        self.data = self.cursor.fetchone()
+        if self.data is not None and self.data['description'] is not None:
+            return True
+
+        # check the gb_data table using title
+        goodbooks_query = sql.SQL(
+            "SELECT * "
+            "FROM gb_data "
+            "WHERE title = %s LIMIT 1;"
+        )
+        self.cursor.execute(goodbooks_query, (self.title,))
         self.data = self.cursor.fetchone()
         if self.data is not None and self.data['description'] is not None:
             return True
@@ -215,13 +226,18 @@ class Book:
             model_type = "hybrid"
         else:
             # continue on to content attempt
+            logging.debug("Starting content based approach")
             if self.book_check():
+                logging.debug("Content check passed, setting description...")
                 self.description = self.data['description']
             else:
+                logging.debug("Initial content check failed, trying insert...")
                 self.db_insert()
                 if self.book_check():
+                    logging.debug("Insert succeeded, setting descrtiption")
                     self.description = self.data['description']
                 else:
+                    logging.debug("No results fetched")
                     logging.debug(
                         f"No description attainable for {self.title}. " +
                         "Suggest alternatives."
@@ -254,23 +270,33 @@ class Book:
                 )
                 ii = sim_index.loc[i]['isbn13']
                 i_results = self.gb_id_query(ii)
+                # as a check, try to get googleid key
+                try:
+                    i_results['googleid'] != None
+                except TypeError:
+                    # if the id query failed, use title
+                    i_results = self.gb_title_query(self.title)
                 if i_results is None:
+                    logging.debug(
+                        "Industry ID/title not found in DB, using gbapi"
+                    )
                     # if results are none, make gbapi call on isbn
                     gid, api_details = self.db_insert(isbn=ii)
                     logging.debug("GOOGLE ID ACQUIRED: " + gid)
                     # switch to google id for reference to avoid empty data
+                    logging.debug("Querying for GID in db...")
                     i_results = self.gb_query(gid)
                     if i_results is None:
-                        # use title to query db if gid fails
-                        i_results = self.gb_title_query(i)
-                        if i_results is None:
-                            # failing that, simply send back api data
-                            # change 'id' to 'googleId' before sending
-                            for item in api_details:
-                                item['googleId'] = item.pop('id')
-                            book_details.append(api_details)
-                            logging.debug("DETAILS ACQUIRED VIA API")
-                            continue
+                        logging.debug(
+                            "GID query failed, sending API data"
+                        )
+                        # failing that, simply send back api data
+                        # change 'id' to 'googleId' before sending
+                        for item in api_details:
+                            item['googleId'] = item.pop('id')
+                        book_details.append(api_details)
+                        logging.debug("DETAILS ACQUIRED VIA API")
+                        continue
 
             else:
                 logging.debug(f"Using lookup with {model_type}")
