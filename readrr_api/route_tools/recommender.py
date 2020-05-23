@@ -15,7 +15,7 @@ from .. route_tools.gb_funcs import retrieve_details
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-logging.disable(logging.DEBUG)
+# logging.disable(logging.DEBUG)
 
 r_tools_path = os.path.join(os.path.dirname(__file__), '..', 'route_tools')
 
@@ -187,17 +187,20 @@ class Book:
         # approach is directly implemented here
         THRESH = 0.5
         search_title = self.title + ' ' + self.author
+        logging.debug(f"Performing search for {search_title}")
         title_transformed = s_vectorizer.transform([search_title])
         dist, ind = s_neighbors.kneighbors(title_transformed)
         dist = dist.flatten()
         ind = ind.flatten()
         close_titles = list(zip(dist, ind))[0]
 
-        if close_titles[0] > THRESH:
+        if close_titles[0] < THRESH:
             i = close_titles[1]
             hybrid_title = bk_srch_idx[i]
+            logging.debug(f"Search for {search_title} produced {hybrid_title}")
         else:
             hybrid_title = None
+            logging.debug("No Hybrid Title Result")
 
         if hybrid_title:
             # get the index of the title in relation to sim_index
