@@ -31,18 +31,43 @@ class NYT:
     
     def get_rank(self, list_type):
         response = self.get_books(list_type)
-
-        return {
-            'rank': response['results']['books'][0]['rank'],
-            'isbn': response['results']['books'][0]['primary_isbn13']
-        }
+        results = []
+        date = response['results']['bestsellers_date']
+        for book in response['results']['books']:
+            results.append({
+                'rank': book['rank'],
+                'isbn': [i['isbn13'] for i in book['isbns']],
+                'date': date,
+                'list': list_type
+            })
+        return results
 
     def gb_query(self, isbn):
         gb_response = self.gb.search(str(isbn))
-        gb_values = get_value(gb_response['items'][0])
-        print(gb_values)
-        execute_queries(gb_values, self.connection)
+        if gb_response['totalItems'] >= 1:
+            gb_values = get_value(gb_response['items'][0])
+            print(gb_response['items'][0]['volumeInfo']['title'])
+            execute_queries(gb_values, self.connection)
+            return True
+        return False
+
+    def update_list(self, list_type):
+        results = self.get_rank(list_type)
+        for i in results:
+            for j in i['isbn']:
+                print(f'ISBN: {j}')
+                status = self.gb_query(j)
+                # if gb_query function above was successful, we break from
+                # looping over isbn's
+                if status:
+                    break
+
+    def update(self):
+        self.update_list('combined-print-and-e-book-nonfiction')
+        self.update_list('combined-print-and-e-book-fiction')
+        self.connection.close()
         return
+
 
     def get(self, book_list):
         # GET CURRENT RESULTS FROM DB
@@ -50,7 +75,4 @@ class NYT:
 
 if __name__ == "__main__":
     nyt = NYT()
-    # fiction = nyt.get_rank('combined-print-and-e-book-fiction')
-    # nonfiction = nyt.get_rank('combined-print-and-e-book-nonfiction')
-    query = nyt.gb_query('9781524763138')
-    print('success')
+    nyt.update()
