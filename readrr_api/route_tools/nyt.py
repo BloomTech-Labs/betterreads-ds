@@ -7,8 +7,7 @@ from requests import get
 from connection import Connection
 from gb_search import GBWrapper
 from populate import execute_queries, get_value
-
-# IMPORT CONNECTION
+from psycopg2 import sql
 
 
 class NYT:
@@ -49,24 +48,36 @@ class NYT:
             )
         return results
 
+    def nyt_insert(self, data):
+        cursor = self.connection.cursor()
+        query = sql.SQL(
+            "INSERT INTO nyt VALUES "
+            "(%s, %s, %s, %s, %s)"
+        )
+        try:
+            cursor.execute(query, data)
+        except Exception as err:
+            connection.rollback()
+        else:
+            connection.commit()
+        cursor.close()
+        
     def gb_query(self, isbn):
         gb_response = self.gb.search(str(isbn))
         if gb_response["totalItems"] >= 1:
-            gb_values = get_value(gb_response["items"][0])
-            print(gb_response["items"][0]["volumeInfo"]["title"])
-            execute_queries(gb_values, self.connection)
-            return True
-        return False
+            return get_value(gb_response["items"][0])
+        return None
 
     def update_list(self, list_type):
         results = self.get_rank(list_type)
         for i in results:
             for j in i["isbn"]:
-                print(f"ISBN: {j}")
-                status = self.gb_query(j)
-                # if gb_query function above was successful, we break from
-                # looping over isbn's
-                if status:
+                gb_values = self.gb_query(j)
+                if gb_values is not None:
+                    execute_queries(gb_values, self.connection)
+                    print(gb_values[0])
+                    # self.nyt_insert(gb_values[0])
+                    # once complete updating db, break from inner isbn loop
                     break
 
     def update(self):
