@@ -2,12 +2,13 @@ from datetime import datetime
 from json import loads
 
 from decouple import config
+from psycopg2 import sql
+from psycopg2.extras import DictCursor
 from requests import get
 
 from connection import Connection
 from gb_search import GBWrapper
 from populate import execute_queries, get_value
-from psycopg2 import sql
 
 
 class NYT:
@@ -36,7 +37,7 @@ class NYT:
     def get_rank(self, list_type):
         response = self.get_books(list_type)
         results = []
-        date = response["results"]["bestsellers_date"]
+        date = response["results"]["published_date"]
         for book in response["results"]["books"]:
             results.append(
                 {
@@ -52,14 +53,17 @@ class NYT:
         cursor = self.connection.cursor()
         query = sql.SQL(
             "INSERT INTO nyt VALUES "
-            "(%s, %s, %s, %s, %s)"
+            "(%s, %s, %s, %s, %s) "
+            "ON CONFLICT (googleid) "
+            "DO UPDATE SET nyt_date = %s"
         )
+        # THIS ONLY UPDATES DATE IF IT EXISTS
         try:
             cursor.execute(query, data)
         except Exception as err:
-            connection.rollback()
+            self.connection.rollback()
         else:
-            connection.commit()
+            self.connection.commit()
         cursor.close()
         
     def gb_query(self, isbn):
@@ -75,8 +79,7 @@ class NYT:
                 gb_values = self.gb_query(j)
                 if gb_values is not None:
                     execute_queries(gb_values, self.connection)
-                    print(gb_values[0])
-                    # self.nyt_insert(gb_values[0])
+                    self.nyt_insert([gb_values[0], i['rank'], j, i['date'], i['list'], i['date']])
                     # once complete updating db, break from inner isbn loop
                     break
 
@@ -87,10 +90,33 @@ class NYT:
         return
 
     def get(self, book_list):
-        # GET CURRENT RESULTS FROM DB
-        return
+        cursor = self.connection.cursor(cursor_factory=DictCursor)
+
+        nyt_query = sql.SQL(
+            "SELECT gb_data.* "
+            "FROM gb_data "
+            "INNER JOIN ( "
+            "SELECT googleid, MAX(nyt_date), nyt_list, rank "
+            "FROM nyt "
+            "WHERE nyt_list = %s "
+            "GROUP BY googleid, nyt_date, nyt_list, rank "
+            "ORDER BY rank "
+            ") nyt "
+            "ON gb_data.googleid = nyt.googleid "
+        )
+
+        cursor.execute(nyt_query, (book_list,))
+        data = cursor.fetchall()
+        cursor.close()
+        return data
 
 
 if __name__ == "__main__":
     nyt = NYT()
-    nyt.update()
+    # OUR UPDATE FUNCTION ONLY UPDATES, SINCE UNIQUE KEY STAYS THE SAME
+    # nyt.update()
+    
+    # GET FUNCTION CURRENTLY RETURNS A LIST, HOWEVER SHOULD RETURN DICTIONARY
+    # (JSON) FOR FASTER PROCESSING
+    # WE CAN ALSO INSERT VIA JSON WHICH WOULD BE EASIER, JUST NEED TO LEARN HOW
+    data = nyt.get("combined-print-and-e-book-nonfiction")
