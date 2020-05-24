@@ -65,7 +65,7 @@ class NYT:
         else:
             self.connection.commit()
         cursor.close()
-        
+
     def gb_query(self, isbn):
         gb_response = self.gb.search(str(isbn))
         if gb_response["totalItems"] >= 1:
@@ -79,7 +79,9 @@ class NYT:
                 gb_values = self.gb_query(j)
                 if gb_values is not None:
                     execute_queries(gb_values, self.connection)
-                    self.nyt_insert([gb_values[0], i['rank'], j, i['date'], i['list'], i['date']])
+                    self.nyt_insert(
+                        [gb_values[0], i["rank"], j, i["date"], i["list"], i["date"]]
+                    )
                     # once complete updating db, break from inner isbn loop
                     break
 
@@ -115,7 +117,7 @@ if __name__ == "__main__":
     nyt = NYT()
     # OUR UPDATE FUNCTION ONLY UPDATES, SINCE UNIQUE KEY STAYS THE SAME
     # nyt.update()
-    
+
     # GET FUNCTION CURRENTLY RETURNS A LIST, HOWEVER SHOULD RETURN DICTIONARY
     # (JSON) FOR FASTER PROCESSING
     # WE CAN ALSO INSERT VIA JSON WHICH WOULD BE EASIER, JUST NEED TO LEARN HOW
