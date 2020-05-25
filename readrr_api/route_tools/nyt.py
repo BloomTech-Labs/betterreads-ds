@@ -81,7 +81,10 @@ class NYT:
                 if gb_values is not None:
                     execute_queries(gb_values, self.connection)
                     self.nyt_insert(
-                        [gb_values[0], i["rank"], j, i["date"], i["list"], i["date"]]
+                        [
+                            gb_values[0], i["rank"], j, i["date"], i["list"],
+                            i["date"]
+                        ]
                     )
                     # once complete updating db, break from inner isbn loop
                     break
