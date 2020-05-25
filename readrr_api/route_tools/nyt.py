@@ -1,9 +1,10 @@
 from datetime import datetime
-from json import loads
-
+from json import loads, dumps
+from pprint import pprint
 from decouple import config
 from psycopg2 import sql
-from psycopg2.extras import DictCursor
+from psycopg2.extras import RealDictCursor, DictCursor
+from psycopg2.extensions import register_adapter
 from requests import get
 
 from connection import Connection
@@ -108,9 +109,14 @@ class NYT:
         )
 
         cursor.execute(nyt_query, (book_list,))
-        data = cursor.fetchall()
+        books = cursor.fetchall()
+        output = {"based_on": book_list, "recommendations": []}
+        for book in books:
+            output["recommendations"].append(dict(book.items()))
+
         cursor.close()
-        return data
+        self.connection.close()
+        return output
 
 
 if __name__ == "__main__":
@@ -118,7 +124,4 @@ if __name__ == "__main__":
     # OUR UPDATE FUNCTION ONLY UPDATES, SINCE UNIQUE KEY STAYS THE SAME
     # nyt.update()
 
-    # GET FUNCTION CURRENTLY RETURNS A LIST, HOWEVER SHOULD RETURN DICTIONARY
-    # (JSON) FOR FASTER PROCESSING
-    # WE CAN ALSO INSERT VIA JSON WHICH WOULD BE EASIER, JUST NEED TO LEARN HOW
     data = nyt.get("combined-print-and-e-book-nonfiction")
