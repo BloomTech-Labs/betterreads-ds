@@ -1,6 +1,12 @@
-**/nlp.pkl
-**/nn.pkl
-**/tfidf_model.pkl
+book_search_index.pkl
+compressed_sim_matrix.pkl
+master_hybrid_index.pkl
+nlp.pkl
+nn.pkl
+search_neighbors.pkl
+tfidf_model.pkl
+search_vectorizer.pkl
+compressed_sim_matrix.zip
 notebooks/
 *.ipynb
 archive/
