@@ -145,3 +145,6 @@ goodbooks-10k/
 hybrid_sim_matrix.zip
 compressed_sim_matrix.zip
 compressed_sim_matrix.pkl
+
+# Swap files
+*.swp
