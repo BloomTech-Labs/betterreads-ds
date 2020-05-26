@@ -6,9 +6,9 @@ from psycopg2 import sql
 from psycopg2.extras import DictCursor
 from requests import get
 
-from connection import Connection
-from gb_search import GBWrapper
-from populate import execute_queries, get_value
+from .connection import Connection
+from .gb_search import GBWrapper
+from .populate import execute_queries, get_value
 
 
 class NYT:
@@ -98,13 +98,16 @@ class NYT:
             "SELECT gb_data.* "
             "FROM gb_data "
             "INNER JOIN ( "
-            "SELECT googleid, MAX(nyt_date), nyt_list, rank "
+            "SELECT * "
             "FROM nyt "
-            "WHERE nyt_list = %s "
-            "GROUP BY googleid, nyt_date, nyt_list, rank "
+            "WHERE nyt_list = 'combined-print-and-e-book-fiction' "
+            "AND nyt_date = ( "
+            "SELECT MAX(nyt_date) "
+            "FROM nyt "
+            "WHERE nyt_list = 'combined-print-and-e-book-fiction') "
             "ORDER BY rank "
             ") nyt "
-            "ON gb_data.googleid = nyt.googleid "
+            "ON gb_data.googleid = nyt.googleid;"
         )
 
         cursor.execute(nyt_query, (book_list,))
