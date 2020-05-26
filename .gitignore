@@ -139,3 +139,9 @@ dmypy.json
 
 # Data Sources
 goodbooks-10k/
+
+# Large Files
+*.pkl
+hybrid_sim_matrix.zip
+compressed_sim_matrix.zip
+compressed_sim_matrix.pkl
