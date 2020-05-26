@@ -1,10 +1,9 @@
 from datetime import datetime
 from json import loads, dumps
-from pprint import pprint
+
 from decouple import config
 from psycopg2 import sql
-from psycopg2.extras import RealDictCursor, DictCursor
-from psycopg2.extensions import register_adapter
+from psycopg2.extras import DictCursor
 from requests import get
 
 from connection import Connection
@@ -27,9 +26,9 @@ class NYT:
         request = get(request_url)
         return loads(request.text)
 
-    def get_books(self, list_type):
+    def get_books(self, list_type, date="current"):
         request_url = (
-            f"https://api.nytimes.com/svc/books/v3/lists/current/"
+            f"https://api.nytimes.com/svc/books/v3/lists/{date}/"
             f"{list_type}.json?api-key={self.NYT_KEY}"
         )
         request = get(request_url)
@@ -53,12 +52,9 @@ class NYT:
     def nyt_insert(self, data):
         cursor = self.connection.cursor()
         query = sql.SQL(
-            "INSERT INTO nyt VALUES "
-            "(%s, %s, %s, %s, %s) "
-            "ON CONFLICT (googleid) "
-            "DO UPDATE SET nyt_date = %s"
+            "INSERT INTO nyt (googleid, rank, isbn, nyt_date, nyt_list) "
+            "VALUES (%s, %s, %s, %s, %s);"
         )
-        # THIS ONLY UPDATES DATE IF IT EXISTS
         try:
             cursor.execute(query, data)
         except Exception as err:
@@ -81,11 +77,8 @@ class NYT:
                 if gb_values is not None:
                     execute_queries(gb_values, self.connection)
                     self.nyt_insert(
-                        [
-                            gb_values[0], i["rank"], j, i["date"], i["list"],
-                            i["date"]
-                        ]
-                    )
+                        [gb_values[0], i["rank"], j, i["date"], i["list"]]
+                        )
                     # once complete updating db, break from inner isbn loop
                     break
 
@@ -96,6 +89,9 @@ class NYT:
         return
 
     def get(self, book_list):
+        """
+        List: "combined-print-and-e-book-nonfiction"
+        """
         cursor = self.connection.cursor(cursor_factory=DictCursor)
 
         nyt_query = sql.SQL(
@@ -120,11 +116,3 @@ class NYT:
         cursor.close()
         self.connection.close()
         return output
-
-
-if __name__ == "__main__":
-    nyt = NYT()
-    # OUR UPDATE FUNCTION ONLY UPDATES, SINCE UNIQUE KEY STAYS THE SAME
-    # nyt.update()
-
-    data = nyt.get("combined-print-and-e-book-nonfiction")
