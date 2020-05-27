@@ -1,30 +1,32 @@
 ## Readrr Labs 21
-Main Site: https://www.readrr.app/
+Visit Readrr: https://www.readrr.app/
 
-DS API: readrr-heroku-test.herokuapp.com/
+Labs 21 Search API: readrr-heroku-test.herokuapp.com/
+
 View Docs for endpoint: https://documenter.getpostman.com/view/10879384/SzYXXz7Z?version=latest
 
-## DS TEAM
+## DS teams
+##### Labs 23
+|Developer      | Github | LinkedIn |Portfolio|
+|---------------|:------:|:--------:|:---------:|
+|Patrick Wolf   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/patrickjwolf)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/patrick-wolf-14356b19/)|🤷
+|Ryan Zernach   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/Zernach)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/zernach/)|[💼](https://www.com)
+|Michael Rowland|[<img src="https://github.com/favicon.ico" width="15">](https://github.com/michael-rowland)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/michaelrowland3/)|[💼](https://www.michaelrow.land/)
+|Jose Marquez   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/jose-marquez89)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/jose-marquez89/)|[💼](https://www.josemarquez.tech)
 
-
-|                                              [Claudia Chajon](https://github.com/claudiasofiac)                                               |                                          [Enrique Collado](https://github.com/fwechino)                                          |                                              [Dylan Nason](https://github.com/DNason1999)                                              |                                             [Kumar Veeravel](https://github.com/mvkumar14)                                             |
-| :----------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: |
-|         [<img src="https://avatars1.githubusercontent.com/u/53544970?s=460&v=4" width = "200" />](https://github.com/claudiasofiac)         |    [<img src="https://avatars2.githubusercontent.com/u/7489370?s=460&v=4" width = "200" />](https://github.com/fwenchino)     |        [<img src="https://ca.slack-edge.com/T4JUEB3ME-UNK2RLD3P-2d36559d35c0-512" width = "200" />](https://github.com/DNason1999)         |       [<img src="https://avatars0.githubusercontent.com/u/45538556?s=460&v=4" width = "200" />](https://github.com/mvkumar14)       |
-|                         [<img src="https://github.com/favicon.ico" width="15">](https://github.com/claudiasofiac)                          |                      [<img src="https://github.com/favicon.ico" width="15">](https://github.com/fwenchino)                      |                         [<img src="https://github.com/favicon.ico" width="15">](https://github.com/DNason1999)                          |                        [<img src="https://github.com/favicon.ico" width="15">](https://github.com/mvkumar14)                        |
-| [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/claudia-chajon-129ab8197/) | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/enrique-collado-fernández-b649504b/) | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/dylan-nason-768001171/) | [<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/kumar-veeravel-b8a70a4a/) |
-
-
-
-
-
-TECH STACK IMAGES (___)
+##### Labs 21
+|Developer      | Github | LinkedIn |Portfolio|
+|---------------|:------:|:--------:|:---------:|
+|Claudia Chajon   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/claudiasofiac)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/claudia-chajon-129ab8197/)|🤷
+|Enrique Collado   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/fwechino)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/enrique-collado-fernández-b649504b/)|🤷
+|Dylan Nason|[<img src="https://github.com/favicon.ico" width="15">](https://github.com/DNason1999)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/dylan-nason-768001171/)|🤷
+|Kumar Veeravel   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/mvkumar14)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/kumar-veeravel-b8a70a4a/)|🤷
 
 ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
 ![Typescript](https://img.shields.io/npm/types/typescript.svg?style=flat)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b5c4db1c-b10d-42c3-b157-3746edd9e81d/deploy-status)](netlify link goes in these parenthesis)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
 
-🚫 more info on using badges [here](https://github.com/badges/shields)
+More info on using badges [here](https://github.com/badges/shields)
 
 ## Project Overview
 
@@ -41,17 +43,17 @@ The core DS role on this project is to provide recommendations. If there are oth
 
 ### Tech Stack
 
-Experiments are run locally in jupyter notebooks, and uploaded to branches of the repo. The API is currently being hosted on heroku, with data being hosted in an AWS RDS database. See [issue #8](https://github.com/Lambda-School-Labs/betterreads-ds/issues/8) for details on why we switched to heroku from an AWS elastic beanstalk instance. 
+Experiments are run locally in jupyter notebooks, and uploaded to branches of the repo. The API is currently being hosted on heroku, with data being hosted in an AWS RDS database. See [issue #8](https://github.com/Lambda-School-Labs/betterreads-ds/issues/8) for details on why we switched to heroku from an AWS elastic beanstalk instance.
 
 ### Predictions
 
- The core recommendation model is based off of a list of the top 10,000 books from goodreads. The data is sourced from [here](https://github.com/zygmuntz/goodbooks-10k). In the future this data will (hopefully) be augmented by OpenLibrary Data, and Google API data. 
- 
+ The core recommendation model is based off of a list of the top 10,000 books from goodreads. The data is sourced from [here](https://github.com/zygmuntz/goodbooks-10k). In the future this data will (hopefully) be augmented by OpenLibrary Data, and Google API data.
+
  Recommendation models seem to nearly always come down to some implimentation of the nearest neighbors model. The key is to find a proper embedding such that the nearest neighbors model returns good results. The current model is a K-nearest-neighbors model using user rating profiles. For more information about the model see the [recommendations](https://github.com/Lambda-School-Labs/betterreads-ds/tree/Recommendations) branch.
 
 
 ### Explanatory Variables
- Currently the only explanitory variable in the recommendations data is user ratings. 
+ Currently the only explanitory variable in the recommendations data is user ratings.
 -   Explanatory Variable 1
 -   Explanatory Variable 2
 -   Explanatory Variable 3
@@ -80,7 +82,7 @@ Experiments are run locally in jupyter notebooks, and uploaded to branches of th
 
 ### How to connect to the web API
 
-Details on how to connect to the Web API are located at the top of [this](https://www.notion.so/Architecture-Details-21cb8620660946b68e16762429d778c5) document. 
+Details on how to connect to the Web API are located at the top of [this](https://www.notion.so/Architecture-Details-21cb8620660946b68e16762429d778c5) document.
 
 ### How to connect to the data API
 
