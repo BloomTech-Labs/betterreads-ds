@@ -3,12 +3,13 @@ import os
 import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
+from psycopg2 import sql
 
-# from readrr_api.route_tools.connection import Connection
+from connection import Connection
 
 db_schema = {
     'book_tags': {
-        'goodreads_book_id': 'integer PRIMARY KEY',
+        'goodreads_book_id': 'integer',
         'tag_id': 'integer',
         'count': 'integer'
     },
@@ -18,10 +19,10 @@ db_schema = {
         'best_book_id': 'integer',
         'work_id': 'integer',
         'books_count': 'integer',
-        'isbn': 'bigint',
-        'isbn13': 'numeric(13)',
+        'isbn': 'text',
+        'isbn13': 'text',
         'authors': 'text',
-        'original_publication_year': 'integer',
+        'original_publication_year': 'text',
         'original_title': 'text',
         'title': 'text',
         'language_code': 'text',
@@ -94,42 +95,41 @@ def create_query(table_name, schema_dict):
     https://www.postgresql.org/docs/11/datatype.html
     '''
     columns = db_schema[table_name]
-    columns_str = ''
-    for column, value in columns.items():
-        columns_str += f'\n{column} {value}, '
-    columns_str = columns_str[:-2]
-    return f"CREATE TABLE goodbooks_{table_name} ({columns_str});"
+    return (
+        f"goodbooks_{table_name}",
+        [f'{column} {value}' for column, value in columns.items()]
+        )
 
 
-def goodbooks_insert():
+def goodbooks_insert(conn):
+    cursor = conn.cursor()
     path = 'goodbooks-10k/'
-
     for file in os.listdir(path):
         if file.endswith(".csv"):
             table = file.split(".")[0]
-            # print(f'CREATING TABLE {table}')
-            # create = create_query(table, db_schema)
-            # EXECUTE SQL COMMAND HERE
+            columns = [
+                f'{column} {value}' for column, value in db_schema[table]
+                .items()
+                ]
+            command = (
+                f'CREATE TABLE IF NOT EXISTS goodbooks_{table} ('
+                f'{",".join(columns)});'
+            )
+            cursor.execute(command)
 
-            with open(path + file) as csvfile:
-                rows = csv.reader(csvfile, delimiter=',')
-                header = next(rows)
-                for row in rows:
-                    cursor = connection.cursor()
-                    query = sql.SQL(
-                        "INSERT INTO table () "
-                        "VALUES (%s, %s, %s, %s, %s);"
-                    )
-                    break
+            with open(path + file, 'r') as f:
+                next(f)
+                cursor.copy_from(f, f'goodbooks_{table}', sep=',')
+                cursor.execute(command)
+
+    cursor.close()
+    conn.commit()
 
     return
 
 
 if __name__ == "__main__":
-    goodbooks_insert()
-
-    # CONNECTION GOES HERE
-
-    # XML INSERT
-    # GOODBOOKS REPO MUST BE CLONED INTO MAIN REPO
-    # GOODBOOKS INSERT
+    conn = Connection()
+    conn = conn.connection
+    goodbooks_insert(conn)
+    conn.close()
