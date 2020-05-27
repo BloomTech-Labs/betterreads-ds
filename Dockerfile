@@ -15,7 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 
 WORKDIR /app/readrr_api/route_tools
-RUN unzip nlp.zip && unzip nn.zip && unzip tfidf_model.zip
+RUN wget https://elasticbeanstalk-us-east-1-394688380943.s3.amazonaws.com/compressed_sim_matrix.zip
+RUN unzip \*.zip
+RUN rm *.zip
 WORKDIR /app
 
 EXPOSE 8000
