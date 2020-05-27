@@ -1,9 +1,14 @@
-## Readrr Labs 21
-Visit Readrr: https://www.readrr.app/
+## Readrr Recommendations API
+![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
+![Python 3.6.5](https://img.shields.io/badge/python-3.6.5-blue)
+![spacy](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/spacy)
+![scikit-learn](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/scikit-learn)
+![flask](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/flask)
+![gunicorn](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/gunicorn)
 
-Labs 21 Search API: readrr-heroku-test.herokuapp.com/
-
-View Docs for endpoint: https://documenter.getpostman.com/view/10879384/SzYXXz7Z?version=latest
+- Visit [Readrr](https://www.readrr.app/)
+- Primary API [Documention](https://documenter.getpostman.com/view/10879384/SztBbTgd?version=latest)
+- Labs 21 Search API [Documentation](https://documenter.getpostman.com/view/10879384/SzYXXz7Z?version=latest)
 
 ## DS teams
 ##### Labs 23
@@ -22,12 +27,6 @@ View Docs for endpoint: https://documenter.getpostman.com/view/10879384/SzYXXz7Z
 |Dylan Nason|[<img src="https://github.com/favicon.ico" width="15">](https://github.com/DNason1999)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/dylan-nason-768001171/)|🤷
 |Kumar Veeravel   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/mvkumar14)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/kumar-veeravel-b8a70a4a/)|🤷
 
-![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
-![Python 3.6.5](https://img.shields.io/badge/python-3.6.5-blue)
-![spacy](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/spacy)
-![scikit-learn](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/scikit-learn)
-![flask](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/flask)
-![gunicorn](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/gunicorn)
 
 More info on using badges [here](https://github.com/badges/shields)
 
@@ -158,3 +157,5 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 See [Backend Documentation](_link to your backend readme here_) for details on the backend of our project.
 
 See [Front End Documentation](_link to your front end readme here_) for details on the front end of our project.
+
+More info on using badges [here](https://github.com/badges/shields)
