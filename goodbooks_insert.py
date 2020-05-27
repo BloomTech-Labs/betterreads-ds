@@ -1,9 +1,8 @@
-import xml.etree.ElementTree as ET
 import csv
-import os #NECESSARY? NEED TO SET PATH
+import os
+import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
-import pandas as pd #NECESSARY?
 
 # from readrr_api.route_tools.connection import Connection
 
@@ -97,21 +96,9 @@ def create_query(table_name, schema_dict):
     columns = db_schema[table_name]
     columns_str = ''
     for column, value in columns.items():
-        columns_str += f'"{column}" {value}, '
+        columns_str += f'\n{column} {value}, '
     columns_str = columns_str[:-2]
-    return f'''CREATE TABLE IF NOT EXISTS goodbooks_{table_name} (
-    {columns_str})'''
-
-
-def goodbooks_create(csv_file, schema_dict=db_schema):
-    name = csv_file.split(".")[0]
-    query = f'CREATE TABLE IF NOT EXISTS goodbooks_{name}( '
-    for i, column in enumerate(schema_dict[name].items()):
-        query += f"\n{column[0]} {column[1]}"
-        if i < len(schema_dict[name])-1:
-            query += ","
-    query += "\n);"
-    return query
+    return f"CREATE TABLE goodbooks_{table_name} ({columns_str});"
 
 
 def goodbooks_insert():
@@ -120,22 +107,26 @@ def goodbooks_insert():
     for file in os.listdir(path):
         if file.endswith(".csv"):
             table = file.split(".")[0]
-            print(f'CREATING TABLE {table}')
-            create = create_query(table, db_schema)
+            # print(f'CREATING TABLE {table}')
+            # create = create_query(table, db_schema)
+            # EXECUTE SQL COMMAND HERE
 
-            print(f'INSERTING ROWS TO {table}')
             with open(path + file) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
-                for i, row in enumerate(rows):
-                    print(row)
-                    # NEED TO FIGURE OUT INSERT STATEMENT WITHIN SQLALCHEMY
-                    if i >= 5:
-                        break
+                header = next(rows)
+                for row in rows:
+                    cursor = connection.cursor()
+                    query = sql.SQL(
+                        "INSERT INTO table () "
+                        "VALUES (%s, %s, %s, %s, %s);"
+                    )
+                    break
+
     return
 
 
 if __name__ == "__main__":
-    goodbooks_create('book_tags.csv')
+    goodbooks_insert()
 
     # CONNECTION GOES HERE
 
