@@ -10,7 +10,7 @@ View Docs for endpoint: https://documenter.getpostman.com/view/10879384/SzYXXz7Z
 |Developer      | Github | LinkedIn |Portfolio|
 |---------------|:------:|:--------:|:---------:|
 |Patrick Wolf   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/patrickjwolf)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/patrick-wolf-14356b19/)|🤷
-|Ryan Zernach   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/Zernach)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/zernach/)|[💼](https://www.com)
+|Ryan Zernach   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/Zernach)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/zernach/)|[💼](https://ryan.zernach.com/portfolio/)
 |Michael Rowland|[<img src="https://github.com/favicon.ico" width="15">](https://github.com/michael-rowland)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/michaelrowland3/)|[💼](https://www.michaelrow.land/)
 |Jose Marquez   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/jose-marquez89)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/jose-marquez89/)|[💼](https://www.josemarquez.tech)
 
@@ -23,8 +23,11 @@ View Docs for endpoint: https://documenter.getpostman.com/view/10879384/SzYXXz7Z
 |Kumar Veeravel   |[<img src="https://github.com/favicon.ico" width="15">](https://github.com/mvkumar14)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15">](https://www.linkedin.com/in/kumar-veeravel-b8a70a4a/)|🤷
 
 ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
-![Typescript](https://img.shields.io/npm/types/typescript.svg?style=flat)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
+![Python 3.6.5](https://img.shields.io/badge/python-3.6.5-blue)
+![spacy](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/spacy)
+![scikit-learn](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/scikit-learn)
+![flask](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/flask)
+![gunicorn](https://img.shields.io/github/pipenv/locked/dependency-version/Lambda-School-Labs/betterreads-ds/gunicorn)
 
 More info on using badges [here](https://github.com/badges/shields)
 
