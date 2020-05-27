@@ -5,11 +5,11 @@ import os #NECESSARY? NEED TO SET PATH
 from bs4 import BeautifulSoup
 import pandas as pd #NECESSARY?
 
-from readrr_api.route_tools.connection import Connection
+# from readrr_api.route_tools.connection import Connection
 
 db_schema = {
     'book_tags': {
-        'goodreads_book_id': 'integer',
+        'goodreads_book_id': 'integer PRIMARY KEY',
         'tag_id': 'integer',
         'count': 'integer'
     },
@@ -79,26 +79,14 @@ def book_parser(path=None):
 
 
 def xml_insert():
-    # CHECK FUNCTION INPUTS
     path = 'goodbooks-10k/books_xml/books_xml/books_xml/'
     books = os.listdir(path)
 
     data = {}
     for i, book in enumerate(books):
-        # if i % 1000 == 0:
-        #     print(f'Parsing book {i}')
         row = book_parser(path + book)
         data[book.split('.')[0]] = row
-
-    df = pd.DataFrame.from_dict(data=data, orient='index')
-    # NEED TO REWRITE THIS WITH PSYCOPG
-    # engine = connection()
-    # df.to_sql(
-    #     'goodbooks_books_xml',
-    #     con=engine,
-    #     if_exists='replace',
-    #     index=False
-    # )
+    return data
 
 
 def create_query(table_name, schema_dict):
@@ -114,8 +102,19 @@ def create_query(table_name, schema_dict):
     return f'''CREATE TABLE IF NOT EXISTS goodbooks_{table_name} (
     {columns_str})'''
 
+
+def goodbooks_create(csv_file, schema_dict=db_schema):
+    name = csv_file.split(".")[0]
+    query = f'CREATE TABLE IF NOT EXISTS goodbooks_{name}( '
+    for i, column in enumerate(schema_dict[name].items()):
+        query += f"\n{column[0]} {column[1]}"
+        if i < len(schema_dict[name])-1:
+            query += ","
+    query += "\n);"
+    return query
+
+
 def goodbooks_insert():
-    # 
     path = 'goodbooks-10k/'
 
     for file in os.listdir(path):
@@ -128,6 +127,7 @@ def goodbooks_insert():
             with open(path + file) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for i, row in enumerate(rows):
+                    print(row)
                     # NEED TO FIGURE OUT INSERT STATEMENT WITHIN SQLALCHEMY
                     if i >= 5:
                         break
@@ -135,6 +135,7 @@ def goodbooks_insert():
 
 
 if __name__ == "__main__":
+    goodbooks_create('book_tags.csv')
 
     # CONNECTION GOES HERE
 
