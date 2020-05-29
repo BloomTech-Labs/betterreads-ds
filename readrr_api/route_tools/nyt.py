@@ -100,17 +100,17 @@ class NYT:
             "INNER JOIN ( "
             "SELECT * "
             "FROM nyt "
-            "WHERE nyt_list = 'combined-print-and-e-book-fiction' "
+            "WHERE nyt_list = %s "
             "AND nyt_date = ( "
             "SELECT MAX(nyt_date) "
             "FROM nyt "
-            "WHERE nyt_list = 'combined-print-and-e-book-fiction') "
+            "WHERE nyt_list = %s) "
             "ORDER BY rank "
             ") nyt "
             "ON gb_data.googleid = nyt.googleid;"
         )
 
-        cursor.execute(nyt_query, (book_list,))
+        cursor.execute(nyt_query, [book_list, book_list])
         books = cursor.fetchall()
         output = {"based_on": book_list, "recommendations": []}
         for book in books:
